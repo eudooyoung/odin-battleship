@@ -2,18 +2,19 @@ import Ship from "./ship.js";
 
 export default class Gameboard {
   ocean;
+  #missed;
+  #ships;
 
   constructor() {
     this.ocean = new Array(10).fill().map(() => new Array(10));
+    this.#missed = new Set();
+    this.#ships = new Set();
   }
 
   placeShip = (coord, length, isVertical = false) => {
     const row = coord[0];
     const col = coord[1];
-    if (row < 0 || col < 0) {
-      throw new RangeError("The ship cannot be placed in range");
-    }
-    if (row > 9 || col > 9) {
+    if (!this.#isCoordValid(row, col)) {
       throw new RangeError("The ship cannot be placed in range");
     }
 
@@ -46,5 +47,41 @@ export default class Gameboard {
         this.ocean[row][col + i] = ship;
       }
     }
+
+    this.#ships.add(ship);
   };
+
+  recieveAttack = (coord) => {
+    const row = coord[0];
+    const col = coord[1];
+    if (!this.#isCoordValid(row, col)) {
+      throw new RangeError("The ship cannot be placed in range");
+    }
+
+    const square = this.ocean[row][col];
+    if (square instanceof Ship) {
+      square.hit();
+      return true;
+    }
+
+    if (!square) {
+      this.ocean[row][col] = "miss";
+      this.#missed.add(JSON.stringify(coord));
+      return false;
+    }
+  };
+
+  #isCoordValid = (row, col) => {
+    if (row < 0 || col < 0) return false;
+    if (row > 9 || col > 9) return false;
+    return true;
+  };
+
+  get missed() {
+    return this.#missed;
+  }
+
+  get ships() {
+    return this.#ships;
+  }
 }
