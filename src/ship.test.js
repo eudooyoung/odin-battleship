@@ -12,7 +12,7 @@ describe("ship test", () => {
     expect(() => new Ship()).toThrow(TypeError);
   });
 
-  it("hit & isSunk methods", () => {
+  it("hit & isSunk functions", () => {
     const ship = new Ship(2);
     expect(ship.isSunk).toBe(false);
     ship.hit();
