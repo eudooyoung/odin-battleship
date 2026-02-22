@@ -1,0 +1,79 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100dvh;
+
+  display: grid;
+  grid-template-rows: 2fr 9fr 1fr;
+}
+
+header {
+  display: grid;
+  place-items: center;
+}
+
+main {
+  background-color: lightblue;
+
+  display: grid;
+  place-items: center;
+}
+
+.board-container {
+  height: 90%;
+  width: 90%;
+  background-color: lightsalmon;
+
+  display: grid;
+  grid-template-areas:
+    "ocean target"
+    "button-container button-container";
+  grid-template-rows: 5fr 1fr;
+  grid-gap: 2em 8em;
+  justify-content: center;
+}
+
+.ocean,
+.target {
+  background-color: #000;
+  aspect-ratio: 1 / 1;
+
+  display: grid;
+  grid-template-rows: repeat(11, 1fr);
+  grid-template-columns: repeat(11, 1fr);
+  gap: 1px;
+}
+
+.ocean {
+  grid-area: ocean;
+}
+
+.target {
+  grid-area: target;
+}
+
+.square {
+  background-color: #fff;
+  aspect-ratio: 1 / 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-container {
+  grid-area: button-container;
+
+  background-color: lightgreen;
+  display: grid;
+  place-content: center;
+}
+
+footer {
+  display: grid;
+  place-items: center;
+}
