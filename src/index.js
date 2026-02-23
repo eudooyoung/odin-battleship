@@ -8,9 +8,11 @@ import {
   renderFooter,
   updateOcean,
   updateTarget,
+  attack,
 } from "./dom.js";
 import Player from "./player.js";
 
+const players = { player: null, computer: null };
 const init = () => {
   const body = document.body;
 
@@ -22,8 +24,8 @@ const init = () => {
 };
 
 const play = () => {
-  const player = new Player(true);
-  const computer = new Player();
+  const player = (players.player = new Player(true));
+  const computer = (players.computer = new Player());
 
   const playerBoard = player.board;
   playerBoard.placeShip([0, 0], 0);
@@ -47,6 +49,11 @@ main.addEventListener("click", (e) => {
   const startButton = e.target.closest("button", "start");
   if (startButton) {
     play();
+  }
+
+  const targetSquare = e.target.closest(".target .square");
+  if (targetSquare) {
+    attack(targetSquare);
   }
 });
 

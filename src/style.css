@@ -85,7 +85,7 @@ main {
   background-color: #f00;
 }
 
-.target .shipped {
+.target .shipped.show {
   background-color: #00f;
 }
 

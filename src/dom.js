@@ -98,6 +98,10 @@ export const updateTarget = (board) => {
   });
 };
 
+export const attack = (square) => {
+  square.classList.add("show");
+};
+
 const renderButtonContainer = () => {
   const buttonContainer = document.createElement("div");
   buttonContainer.classList.add("button-container");
