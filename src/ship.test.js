@@ -1,7 +1,7 @@
 import Ship from "./ship.js";
 
 describe("ship test", () => {
-  it.only("inital state", () => {
+  it("inital state", () => {
     expect(Ship).toBeDefined();
 
     const ship = new Ship(0);
@@ -13,7 +13,7 @@ describe("ship test", () => {
   });
 
   it("hit & isSunk functions", () => {
-    const ship = new Ship(2);
+    const ship = new Ship(4);
     expect(ship.isSunk).toBe(false);
     ship.hit();
     ship.hit();

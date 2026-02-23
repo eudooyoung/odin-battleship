@@ -1,74 +1,90 @@
 import Ship from "./ship.js";
 
 export default class Gameboard {
+  #ships;
   #ocean;
   #missed;
-  #ships;
 
   constructor() {
+    this.#ships = new Map();
     this.#ocean = new Map();
     this.#missed = new Set();
-    this.#ships = new Set();
   }
 
-  placeShip = (coord, length, isVertical = true) => {
-    const row = coord[0];
-    const col = coord[1];
+  placeShip = (start, typeCode, isVertical = true) => {
+    const row = start[0];
+    const col = start[1];
     if (!this.#isCoordValid(row, col)) {
-      throw new RangeError("The ship cannot be placed in range");
+      throw new RangeError("The given start coordinate is inappropriate");
     }
 
-    const ship = new Ship(length);
-    if (isVertical) {
-      if (row + length > 9) {
-        throw new RangeError("The ship cannot be placed in range");
-      }
-      for (let i = 0; i < length; i++) {
-        if (this.#ocean[row + i][col] instanceof Ship) {
-          throw new Error("The square is already occupied");
-        }
-      }
+    const ship = new Ship(typeCode);
+    if (this.#ships.has(typeCode)) {
+      throw new Error("The ship has already been used");
+    }
 
-      for (let i = 0; i < length; i++) {
-        this.#ocean[row + i][col] = ship;
+    this.#ships.set(typeCode, ship);
+    this.#ocean.set(typeCode, new Array());
+    const coords = this.#ocean.get(typeCode);
+
+    if (isVertical) {
+      for (let i = 0; i < ship.length; i++) {
+        const coord = [row + i, col];
+        const coordStr = JSON.stringify(coord);
+        if (this.#isOverlapping(coordStr)) {
+          this.#ships.delete(typeCode);
+          this.#ocean.delete(typeCode);
+          throw Error("The coordinate has already been occupied");
+        }
+        coords.push(coordStr);
       }
     }
 
     if (!isVertical) {
-      if (col + length > 9) {
-        throw new RangeError("The ship cannot be placed in range");
-      }
-      for (let i = 0; i < length; i++) {
-        if (this.#ocean[row][col + i] instanceof Ship) {
-          throw new Error("The square is already occupied");
+      for (let i = 0; i < ship.length; i++) {
+        const coord = [row, col + i];
+        const coordStr = JSON.stringify(coord);
+        if (this.#isOverlapping(coordStr)) {
+          this.#ships.delete(typeCode);
+          this.#ocean.delete(typeCode);
+          throw Error("The coordinate has already been occupied");
         }
-      }
-      for (let i = 0; i < length; i++) {
-        this.#ocean[row][col + i] = ship;
+        coords.push(coordStr);
       }
     }
-
-    this.#ships.add(ship);
   };
 
-  recieveAttack = (coord) => {
-    const row = coord[0];
-    const col = coord[1];
+  #isOverlapping = (target) => {
+    const occupied = this.#ocean.values();
+    for (let coords of occupied) {
+      if (coords.includes(target)) return true;
+    }
+    return false;
+  };
+
+  recieveAttack = (target) => {
+    const row = target[0];
+    const col = target[1];
     if (!this.#isCoordValid(row, col)) {
       throw new RangeError("The ship cannot be placed in range");
     }
 
-    const square = this.#ocean[row][col];
-    if (square instanceof Ship) {
-      square.hit();
-      return true;
+    const targetStr = JSON.stringify(target);
+
+    for (let shipCode of this.#ships.keys()) {
+      const coords = this.#ocean.get(shipCode);
+      if (coords.includes(targetStr)) {
+        const ship = this.#ships.get(shipCode);
+        ship.hit();
+        if (ship.isSunk) {
+          this.#ships.delete(shipCode);
+        }
+        return true;
+      }
     }
 
-    if (!square) {
-      this.#ocean[row][col] = "miss";
-      this.#missed.add(JSON.stringify(coord));
-      return false;
-    }
+    this.#missed.add(targetStr);
+    return false;
   };
 
   #isCoordValid = (row, col) => {
@@ -77,15 +93,15 @@ export default class Gameboard {
     return true;
   };
 
+  get ships() {
+    return this.#ships;
+  }
+
   get ocean() {
     return this.#ocean;
   }
 
   get missed() {
     return this.#missed;
-  }
-
-  get ships() {
-    return this.#ships;
   }
 }
