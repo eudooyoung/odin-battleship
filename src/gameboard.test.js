@@ -12,33 +12,37 @@ describe("gameboard test", () => {
     expect(Gameboard).toBeDefined();
 
     expect(board).toBeInstanceOf(Gameboard);
-    expect(board.ocean).toEqual(new Array(10).fill().map(() => new Array(10)));
+    expect(board.ocean).toEqual(new Map());
   });
 
   it("placeShip function", () => {
-    board.placeShip([0, 0], 3, true);
-    expect(board.ocean[0][0]).toBe(board.ocean[1][0]);
-    expect(board.ocean[1][0]).toBe(board.ocean[2][0]);
+    board.placeShip([0, 0], 0);
+    expect(board.ocean.get(0)).toEqual([
+      "[0,0]",
+      "[1,0]",
+      "[2,0]",
+      "[3,0]",
+      "[4,0]",
+    ]);
 
-    board.placeShip([0, 1], 3);
-    expect(board.ocean[0][1]).toBe(board.ocean[0][2]);
-    expect(board.ocean[0][2]).toBe(board.ocean[0][3]);
+    board.placeShip([0, 1], 1, false);
+    expect(board.ocean.get(1)).toEqual(["[0,1]", "[0,2]", "[0,3]", "[0,4]"]);
 
-    expect(() => board.placeShip([0, 0], 3, true)).toThrow(Error);
-    expect(() => board.placeShip([0, 7], 5)).toThrow(RangeError);
-    expect(() => board.placeShip([-1, 3], 3)).toThrow(RangeError);
-    expect(() => board.placeShip([11, 5], 3)).toThrow(RangeError);
+    // can not place duplicate type of ship
+    expect(() => board.placeShip([0, 5], 0)).toThrow(Error);
+    // can not place a ship overlaping another
+    expect(() => board.placeShip([0, 0], 2)).toThrow(Error);
   });
 
   it("recieveAttack function", () => {
-    board.placeShip([0, 0], 3);
+    board.placeShip([0, 0], 0);
     expect(board.recieveAttack([0, 0])).toBe(true);
-    expect(board.recieveAttack([0, 1])).toBe(true);
-    expect(board.recieveAttack([0, 2])).toBe(true);
-    expect(board.ocean[0][0].isSunk).toBe(true);
+    expect(board.recieveAttack([1, 0])).toBe(true);
+    expect(board.recieveAttack([2, 0])).toBe(true);
+    expect(board.recieveAttack([3, 0])).toBe(true);
+    expect(board.recieveAttack([4, 0])).toBe(true);
 
     expect(board.recieveAttack([0, 3])).toBe(false);
-    expect(board.ocean[0][3]).toBe("miss");
 
     expect(() => board.recieveAttack([-1, -3])).toThrow(RangeError);
     expect(() => board.recieveAttack([11, 10])).toThrow(RangeError);
@@ -53,18 +57,16 @@ describe("gameboard test", () => {
   });
 
   it("sunk ships tracking", () => {
-    expect(board.ships).toBeInstanceOf(Set);
-    board.placeShip([0, 0], 3);
-    board.placeShip([1, 0], 3);
+    expect(board.ships).toBeInstanceOf(Map);
+    board.placeShip([0, 0], 0);
+    board.placeShip([0, 1], 1);
     expect(board.ships.size).toBe(2);
-
-    for (let i = 0; i < 3; i++) {
-      board.recieveAttack([0, i]);
-      board.recieveAttack([1, i]);
+    for (let i = 0; i < 5; i++) {
+      board.recieveAttack([i, 0]);
     }
-
-    board.ships.forEach((ship) => {
-      expect(ship.isSunk).toBe(true);
-    });
+    for (let i = 0; i < 4; i++) {
+      board.recieveAttack([i, 1]);
+    }
+    expect(board.ships.size).toBe(0);
   });
 });
