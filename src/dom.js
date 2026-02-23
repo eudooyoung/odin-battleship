@@ -15,9 +15,8 @@ export const renderMain = () => {
 
   const oceanDesc = renderDesc("ocean");
   const targetDesc = renderDesc("target");
-
-  const ocean = renderOcean();
-  const target = renderTarget();
+  const ocean = renderBoard("ocean");
+  const target = renderBoard("target");
   const buttonContainer = renderButtonContainer();
 
   boardContainer.append(oceanDesc, targetDesc, ocean, target, buttonContainer);
@@ -32,9 +31,9 @@ const renderDesc = (name) => {
   return desc;
 };
 
-const renderOcean = () => {
-  const ocean = document.createElement("div");
-  ocean.classList.add("board", "ocean");
+const renderBoard = (name) => {
+  const board = document.createElement("div");
+  board.classList.add("board", `${name}`);
 
   for (let i = 0; i < 11; i++) {
     for (let j = 0; j < 11; j++) {
@@ -42,32 +41,13 @@ const renderOcean = () => {
       square.classList.add("square");
       square.dataset.rows = i;
       square.dataset.columns = j;
-      ocean.append(square);
+      board.append(square);
     }
   }
 
-  renderIndices(ocean);
+  renderIndices(board);
 
-  return ocean;
-};
-
-const renderTarget = () => {
-  const target = document.createElement("div");
-  target.classList.add("board", "target");
-
-  for (let i = 0; i < 11; i++) {
-    for (let j = 0; j < 11; j++) {
-      const square = document.createElement("div");
-      square.classList.add("square");
-      square.dataset.rows = i;
-      square.dataset.columns = j;
-      target.append(square);
-    }
-  }
-
-  renderIndices(target);
-
-  return target;
+  return board;
 };
 
 const renderIndices = (board) => {

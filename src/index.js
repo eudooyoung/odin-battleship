@@ -12,9 +12,12 @@ const init = () => {
   body.append(header, main, footer);
 };
 
+const play = () => {};
+
 main.addEventListener("click", (e) => {
   const startButton = e.target.closest("button", "start");
   if (startButton) {
+    play();
   }
 });
 
