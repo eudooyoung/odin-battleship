@@ -81,6 +81,14 @@ main {
   align-items: center;
 }
 
+.ocean .shipped {
+  background-color: #f00;
+}
+
+.target .shipped {
+  background-color: #00f;
+}
+
 .button-container {
   grid-area: button-container;
 

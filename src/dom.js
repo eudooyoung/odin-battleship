@@ -67,6 +67,35 @@ const renderIndices = (board) => {
 export const updateOcean = (board) => {
   const oceanDOM = main.querySelector(".board.ocean");
   const ocean = board.ocean;
+  const occupied = ocean.values();
+  occupied.forEach((coords) => {
+    coords.forEach((coord) => {
+      const coordArr = JSON.parse(coord);
+      const row = coordArr[0];
+      const col = coordArr[1];
+      const square = oceanDOM.querySelector(
+        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
+      );
+      square.classList.add("shipped");
+    });
+  });
+};
+
+export const updateTarget = (board) => {
+  const targetDOM = main.querySelector(".board.target");
+  const ocean = board.ocean;
+  const occupied = ocean.values();
+  occupied.forEach((coords) => {
+    coords.forEach((coord) => {
+      const coordArr = JSON.parse(coord);
+      const row = coordArr[0];
+      const col = coordArr[1];
+      const square = targetDOM.querySelector(
+        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
+      );
+      square.classList.add("shipped");
+    });
+  });
 };
 
 const renderButtonContainer = () => {

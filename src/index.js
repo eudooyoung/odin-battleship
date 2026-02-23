@@ -1,6 +1,14 @@
 import "./style.css";
-import { header, main, footer } from "./dom.js";
-import { renderHeader, renderMain, renderFooter, updateOcean } from "./dom.js";
+import {
+  header,
+  main,
+  footer,
+  renderHeader,
+  renderMain,
+  renderFooter,
+  updateOcean,
+  updateTarget,
+} from "./dom.js";
 import Player from "./player.js";
 
 const init = () => {
@@ -24,7 +32,15 @@ const play = () => {
   playerBoard.placeShip([0, 3], 3);
   playerBoard.placeShip([0, 4], 4);
 
+  const computerBoard = computer.board;
+  computerBoard.placeShip([0, 0], 0);
+  computerBoard.placeShip([0, 1], 1);
+  computerBoard.placeShip([0, 2], 2);
+  computerBoard.placeShip([0, 3], 3);
+  computerBoard.placeShip([0, 4], 4);
+
   updateOcean(playerBoard);
+  updateTarget(computerBoard);
 };
 
 main.addEventListener("click", (e) => {
