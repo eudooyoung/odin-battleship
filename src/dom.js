@@ -64,6 +64,11 @@ const renderIndices = (board) => {
   }
 };
 
+export const updateOcean = (board) => {
+  const oceanDOM = main.querySelector(".board.ocean");
+  const ocean = board.ocean;
+};
+
 const renderButtonContainer = () => {
   const buttonContainer = document.createElement("div");
   buttonContainer.classList.add("button-container");
