@@ -30,15 +30,31 @@ main {
 
   display: grid;
   grid-template-areas:
+    "ocean-desc target-desc"
     "ocean target"
     "button-container button-container";
-  grid-template-rows: 5fr 1fr;
-  grid-gap: 2em 8em;
+  grid-template-rows: 0.5fr 10fr 1.5fr;
+  grid-gap: 1.5em 7em;
   justify-content: center;
 }
 
-.ocean,
-.target {
+.description {
+  background-color: #fff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.description.ocean {
+  grid-area: ocean-desc;
+}
+
+.description.target {
+  grid-area: target-desc;
+}
+
+.board {
   background-color: #000;
   aspect-ratio: 1 / 1;
 
@@ -48,11 +64,11 @@ main {
   gap: 1px;
 }
 
-.ocean {
+.board.ocean {
   grid-area: ocean;
 }
 
-.target {
+.board.target {
   grid-area: target;
 }
 

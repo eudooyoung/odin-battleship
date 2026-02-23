@@ -13,18 +13,23 @@ export const renderMain = () => {
   const boardContainer = document.createElement("div");
   boardContainer.classList.add("board-container");
 
+  const oceanDesc = renderDesc("ocean");
+  const targetDesc = renderDesc("target");
+
   const ocean = renderOcean();
   const target = renderTarget();
+  const buttonContainer = renderButtonContainer();
 
-  const buttonContainer = document.createElement("div");
-  buttonContainer.classList.add("button-container");
-  const startButton = document.createElement("button");
-  startButton.textContent = "Start Game";
-  startButton.classList.add("button", "start");
-
-  buttonContainer.append(startButton);
-  boardContainer.append(ocean, target, buttonContainer);
+  boardContainer.append(oceanDesc, targetDesc, ocean, target, buttonContainer);
   main.append(boardContainer);
+};
+
+const renderDesc = (name) => {
+  const desc = document.createElement("div");
+  desc.classList.add("description", `${name}`);
+  desc.textContent = name;
+
+  return desc;
 };
 
 const renderOcean = () => {
@@ -77,6 +82,19 @@ const renderIndices = (board) => {
     const rowIndice = rowIndices[i];
     rowIndice.textContent = i;
   }
+};
+
+const renderButtonContainer = () => {
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("button-container");
+
+  const startButton = document.createElement("button");
+  startButton.textContent = "Start Game";
+  startButton.classList.add("button", "start");
+
+  buttonContainer.append(startButton);
+
+  return buttonContainer;
 };
 
 export const renderFooter = () => {
