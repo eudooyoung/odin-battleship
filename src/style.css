@@ -1,0 +1,95 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100dvh;
+
+  display: grid;
+  grid-template-rows: 2fr 9fr 1fr;
+}
+
+header {
+  display: grid;
+  place-items: center;
+}
+
+main {
+  background-color: lightblue;
+
+  display: grid;
+  place-items: center;
+}
+
+.board-container {
+  height: 90%;
+  width: 90%;
+  background-color: lightsalmon;
+
+  display: grid;
+  grid-template-areas:
+    "ocean-desc target-desc"
+    "ocean target"
+    "button-container button-container";
+  grid-template-rows: 0.5fr 10fr 1.5fr;
+  grid-gap: 1.5em 7em;
+  justify-content: center;
+}
+
+.description {
+  background-color: #fff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.description.ocean {
+  grid-area: ocean-desc;
+}
+
+.description.target {
+  grid-area: target-desc;
+}
+
+.board {
+  background-color: #000;
+  aspect-ratio: 1 / 1;
+
+  display: grid;
+  grid-template-rows: repeat(11, 1fr);
+  grid-template-columns: repeat(11, 1fr);
+  gap: 1px;
+}
+
+.board.ocean {
+  grid-area: ocean;
+}
+
+.board.target {
+  grid-area: target;
+}
+
+.square {
+  background-color: #fff;
+  aspect-ratio: 1 / 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-container {
+  grid-area: button-container;
+
+  background-color: lightgreen;
+  display: grid;
+  place-content: center;
+}
+
+footer {
+  display: grid;
+  place-items: center;
+}
