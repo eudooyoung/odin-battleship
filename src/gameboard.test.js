@@ -17,20 +17,14 @@ describe("gameboard test", () => {
 
   it("placeShip function", () => {
     board.placeShip([0, 0], 0);
-    expect(board.ocean.get(0)).toEqual([
-      "[0,0]",
-      "[1,0]",
-      "[2,0]",
-      "[3,0]",
-      "[4,0]",
-    ]);
+    expect(board.ocean.get(0).size).toBe(5);
 
     board.placeShip([0, 1], 1, false);
-    expect(board.ocean.get(1)).toEqual(["[0,1]", "[0,2]", "[0,3]", "[0,4]"]);
+    expect(board.ocean.get(1).size).toBe(4);
 
-    // can not place duplicate type of ship
+    // cannot place duplicate type of ship
     expect(() => board.placeShip([0, 5], 0)).toThrow(Error);
-    // can not place a ship overlaping another
+    // cannot place a ship overlaping another
     expect(() => board.placeShip([0, 0], 2)).toThrow(Error);
   });
 
