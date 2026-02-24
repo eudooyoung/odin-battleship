@@ -8,11 +8,12 @@ import {
   renderFooter,
   updateOcean,
   updateTarget,
-  attack,
+  mark,
 } from "./dom.js";
 import Player from "./player.js";
 
 const players = { player: null, computer: null };
+
 const init = () => {
   const body = document.body;
 
@@ -45,6 +46,13 @@ const play = () => {
   updateTarget(computerBoard);
 };
 
+const attack = (square) => {
+  const computerBoard = players.computer.board;
+  const row = square.dataset.rows - 1;
+  const col = square.dataset.columns - 1;
+  mark(computerBoard.recieveAttack([row, col]), square);
+};
+
 main.addEventListener("click", (e) => {
   const startButton = e.target.closest("button", "start");
   if (startButton) {
@@ -53,6 +61,9 @@ main.addEventListener("click", (e) => {
 
   const targetSquare = e.target.closest(".target .square");
   if (targetSquare) {
+    if (!players.player || !players.computer) {
+      return;
+    }
     attack(targetSquare);
   }
 });

@@ -98,8 +98,15 @@ export const updateTarget = (board) => {
   });
 };
 
-export const attack = (square) => {
-  square.classList.add("show");
+export const mark = (isValidAttack, square) => {
+  if (isValidAttack) {
+    square.classList.add("show");
+    return;
+  }
+
+  if (!isValidAttack) {
+    square.textContent = ".";
+  }
 };
 
 const renderButtonContainer = () => {
