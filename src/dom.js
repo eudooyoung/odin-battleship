@@ -68,8 +68,8 @@ export const updateOcean = (board) => {
   const oceanDOM = main.querySelector(".board.ocean");
   const ocean = board.ocean;
   const occupied = ocean.values();
-  occupied.forEach((coords) => {
-    coords.forEach((coord) => {
+  for (let coordStatus of occupied) {
+    for (let coord of coordStatus.keys()) {
       const coordArr = JSON.parse(coord);
       const row = coordArr[0];
       const col = coordArr[1];
@@ -77,16 +77,20 @@ export const updateOcean = (board) => {
         `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
       );
       square.classList.add("shipped");
-    });
-  });
+      if (!coordStatus.get(coord)) {
+        square.textContent = "X";
+        square.classList.add("attacked");
+      }
+    }
+  }
 };
 
 export const updateTarget = (board) => {
   const targetDOM = main.querySelector(".board.target");
-  const ocean = board.ocean;
-  const occupied = ocean.values();
-  occupied.forEach((coords) => {
-    coords.forEach((coord) => {
+  const target = board.ocean;
+  const occupied = target.values();
+  for (let coordStatus of occupied) {
+    for (let coord of coordStatus.keys()) {
       const coordArr = JSON.parse(coord);
       const row = coordArr[0];
       const col = coordArr[1];
@@ -94,8 +98,12 @@ export const updateTarget = (board) => {
         `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
       );
       square.classList.add("shipped");
-    });
-  });
+      if (!coordStatus.get(coord)) {
+        square.textContent = "X";
+        square.classList.add("attacked");
+      }
+    }
+  }
 };
 
 export const mark = (isValidAttack, square) => {

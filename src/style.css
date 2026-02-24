@@ -85,6 +85,10 @@ main {
   background-color: #f00;
 }
 
+.ocean .shipped.attacked {
+  color: #fff;
+}
+
 .target .shipped.show {
   background-color: #00f;
 }
