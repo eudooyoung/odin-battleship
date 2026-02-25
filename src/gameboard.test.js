@@ -53,6 +53,7 @@ describe("gameboard test", () => {
   it("sunk ships tracking", () => {
     expect(board.ships).toBeInstanceOf(Map);
     board.placeShip([0, 0], 0);
+    expect(board.ocean.get(0).get("[0,0]")).toBe(true);
     board.placeShip([0, 1], 1);
     expect(board.ships.size).toBe(2);
     for (let i = 0; i < 5; i++) {
@@ -61,6 +62,7 @@ describe("gameboard test", () => {
     for (let i = 0; i < 4; i++) {
       board.recieveAttack([i, 1]);
     }
+    expect(board.ocean.get(0).get("[0,0]")).toBe(false);
     expect(board.ships.size).toBe(0);
   });
 });
