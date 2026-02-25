@@ -98,6 +98,7 @@ export const updateTarget = (board) => {
         `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
       );
       if (!shipStatus.get(coord)) {
+        console.log("hi");
         square.textContent = "X";
         square.classList.add("attacked");
       }

@@ -13,7 +13,6 @@ import {
 import Player from "./player.js";
 
 const players = { player: null, computer: null };
-const turn = { current: null };
 
 const init = () => {
   const body = document.body;
@@ -46,18 +45,20 @@ const play = () => {
   updateOcean(playerBoard);
   updateTarget(computerBoard);
 
-  // while (playerBoard.ships.size !== 0 && computerBoard.ships.size !== 0) {
-  main.addEventListener("click", function attackListener(e) {
-    const targetSquare = e.target.closest(".target .square");
-    if (targetSquare) {
-      attack(targetSquare);
-    }
-    main.removeEventListener("click", attackListener);
-  });
+  let i = 5;
+  while (i > 0) {
+    main.addEventListener("click", function attackListener(e) {
+      const targetSquare = e.target.closest(".target .square");
+      if (targetSquare) {
+        attack(targetSquare);
+      }
+      main.removeEventListener("click", attackListener);
+    });
 
-  updateOcean(playerBoard);
-  updateTarget(computerBoard);
-  // }
+    updateOcean(playerBoard);
+    updateTarget(computerBoard);
+    i--;
+  }
 };
 
 const attack = (square) => {
@@ -65,13 +66,13 @@ const attack = (square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
   computerBoard.recieveAttack([row, col]);
+  console.log(computerBoard.ocean);
 };
 
 main.addEventListener("click", (e) => {
   const startButton = e.target.closest("button", "start");
   if (startButton) {
     play();
-    turn.current = players.player;
   }
 });
 
