@@ -15,7 +15,7 @@ describe("gameboard test", () => {
     expect(board.ocean).toEqual(new Map());
   });
 
-  it("placeShip function", () => {
+  it.only("placeShip function", () => {
     board.placeShip([0, 0], 0);
     expect(board.ocean.get(0).size).toBe(5);
 

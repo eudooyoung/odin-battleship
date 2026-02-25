@@ -89,7 +89,7 @@ main {
   color: #fff;
 }
 
-.target .shipped.show {
+.target .attacked {
   background-color: #00f;
 }
 

@@ -67,9 +67,9 @@ const renderIndices = (board) => {
 export const updateOcean = (board) => {
   const oceanDOM = main.querySelector(".board.ocean");
   const ocean = board.ocean;
-  const occupied = ocean.values();
-  for (let coordStatus of occupied) {
-    for (let coord of coordStatus.keys()) {
+  const shipStatuses = ocean.values();
+  for (let shipStatus of shipStatuses) {
+    for (let coord of shipStatus.keys()) {
       const coordArr = JSON.parse(coord);
       const row = coordArr[0];
       const col = coordArr[1];
@@ -77,7 +77,7 @@ export const updateOcean = (board) => {
         `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
       );
       square.classList.add("shipped");
-      if (!coordStatus.get(coord)) {
+      if (!shipStatus.get(coord)) {
         square.textContent = "X";
         square.classList.add("attacked");
       }
@@ -88,17 +88,16 @@ export const updateOcean = (board) => {
 export const updateTarget = (board) => {
   const targetDOM = main.querySelector(".board.target");
   const target = board.ocean;
-  const occupied = target.values();
-  for (let coordStatus of occupied) {
-    for (let coord of coordStatus.keys()) {
+  const shipStatuses = target.values();
+  for (let shipStatus of shipStatuses) {
+    for (let coord of shipStatus.keys()) {
       const coordArr = JSON.parse(coord);
       const row = coordArr[0];
       const col = coordArr[1];
       const square = targetDOM.querySelector(
         `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
       );
-      square.classList.add("shipped");
-      if (!coordStatus.get(coord)) {
+      if (!shipStatus.get(coord)) {
         square.textContent = "X";
         square.classList.add("attacked");
       }
