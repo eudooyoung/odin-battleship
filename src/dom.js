@@ -84,16 +84,14 @@ export const updateOcean = (board) => {
     }
   }
 
-  const missedIter = board.missed.values();
-  for (let missedCoord of missedIter) {
+  const missed = board.missed;
+  for (let missedCoord of missed) {
     const missedArr = JSON.parse(missedCoord);
     const row = missedArr[0] + 1;
     const col = missedArr[1] + 1;
-    console.log(`${row}${col}`);
     const square = oceanDOM.querySelector(
       `[data-rows="${row}"][data-columns="${col}"]`,
     );
-    console.log(square);
     square.classList.add("missed");
     square.textContent = ".";
   }
@@ -117,8 +115,8 @@ export const updateTarget = (board) => {
     }
   }
 
-  const missedIter = board.missed.values();
-  for (let missedCoord of missedIter) {
+  const missed = board.missed;
+  for (let missedCoord of missed) {
     const missedArr = JSON.parse(missedCoord);
     const row = missedArr[0] + 1;
     const col = missedArr[1] + 1;

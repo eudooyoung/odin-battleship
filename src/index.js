@@ -49,15 +49,15 @@ const play = async () => {
   updateTarget(computerBoard);
   updateConsole(turn);
 
-  // while (playerBoard.ships.size > 0 && computerBoard.ships.size > 0) {
-  const square = await getSquareFromListener();
-  playerAttack(computerBoard, square);
-  computerAttack(playerBoard);
+  while (playerBoard.ships.size > 0 && computerBoard.ships.size > 0) {
+    const square = await getSquareFromListener();
+    playerAttack(computerBoard, square);
+    computerAttack(playerBoard);
 
-  updateOcean(playerBoard);
-  updateTarget(computerBoard);
-  updateConsole(turn);
-  // }
+    updateOcean(playerBoard);
+    updateTarget(computerBoard);
+    updateConsole(turn);
+  }
 };
 
 const getSquareFromListener = () => {
@@ -79,6 +79,11 @@ const playerAttack = (board, square) => {
 const computerAttack = (board) => {
   const row = Math.floor(Math.random() * 10);
   const col = Math.floor(Math.random() * 10);
+  const coord = [row, col];
+  const coordStr = JSON.stringify(coord);
+  if (board.missed.has(coordStr)) {
+    board.ocean.keys();
+  }
   board.recieveAttack([row, col]);
 };
 
