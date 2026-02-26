@@ -9,10 +9,11 @@ import {
   updateOcean,
   updateTarget,
   mark,
+  updateConsole,
 } from "./dom.js";
 import Player from "./player.js";
 
-const players = { player: null, computer: null };
+const turn = { current: null };
 
 const init = () => {
   const body = document.body;
@@ -24,9 +25,9 @@ const init = () => {
   body.append(header, main, footer);
 };
 
-const play = () => {
-  const player = (players.player = new Player(true));
-  const computer = (players.computer = new Player());
+const play = async () => {
+  const player = new Player(true);
+  const computer = new Player();
 
   const playerBoard = player.board;
   playerBoard.placeShip([0, 0], 0);
@@ -42,31 +43,40 @@ const play = () => {
   computerBoard.placeShip([0, 3], 3);
   computerBoard.placeShip([0, 4], 4);
 
+  turn.current = player;
+
   updateOcean(playerBoard);
   updateTarget(computerBoard);
+  updateConsole(turn);
 
-  let i = 5;
-  while (i > 0) {
-    main.addEventListener("click", function attackListener(e) {
-      const targetSquare = e.target.closest(".target .square");
-      if (targetSquare) {
-        attack(targetSquare);
-      }
-      main.removeEventListener("click", attackListener);
-    });
+  // while (playerBoard.ships.size > 0 && computerBoard.ships.size > 0) {
+  const square = await getSquareFromListener();
+  playerAttack(computerBoard, square);
 
-    updateOcean(playerBoard);
-    updateTarget(computerBoard);
-    i--;
-  }
+  updateOcean(playerBoard);
+  updateTarget(computerBoard);
+  updateConsole(turn);
+  // }
 };
 
-const attack = (square) => {
-  const computerBoard = players.computer.board;
+const getSquareFromListener = () => {
+  return new Promise((resolve) => {
+    main.addEventListener("click", function attackListener(e) {
+      const square = e.target.closest(".target .square");
+      resolve(square);
+      main.removeEventListener("click", attackListener);
+    });
+  });
+};
+
+const playerAttack = (board, square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
-  computerBoard.recieveAttack([row, col]);
-  console.log(computerBoard.ocean);
+  board.recieveAttack([row, col]);
+};
+
+const computerAttack = (board) => {
+  const row = Math.random();
 };
 
 main.addEventListener("click", (e) => {

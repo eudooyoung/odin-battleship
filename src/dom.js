@@ -17,9 +17,9 @@ export const renderMain = () => {
   const targetDesc = renderDesc("target");
   const ocean = renderBoard("ocean");
   const target = renderBoard("target");
-  const buttonContainer = renderButtonContainer();
+  const console = renderConsole();
 
-  boardContainer.append(oceanDesc, targetDesc, ocean, target, buttonContainer);
+  boardContainer.append(oceanDesc, targetDesc, ocean, target, console);
   main.append(boardContainer);
 };
 
@@ -98,8 +98,6 @@ export const updateTarget = (board) => {
         `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
       );
       if (!shipStatus.get(coord)) {
-        console.log("hi");
-        square.textContent = "X";
         square.classList.add("attacked");
       }
     }
@@ -117,17 +115,27 @@ export const mark = (isValidAttack, square) => {
   }
 };
 
-const renderButtonContainer = () => {
-  const buttonContainer = document.createElement("div");
-  buttonContainer.classList.add("button-container");
+const renderConsole = () => {
+  const console = document.createElement("div");
+  console.classList.add("console");
 
   const startButton = document.createElement("button");
   startButton.textContent = "Start Game";
   startButton.classList.add("button", "start");
 
-  buttonContainer.append(startButton);
+  console.append(startButton);
 
-  return buttonContainer;
+  return console;
+};
+
+export const updateConsole = (turn) => {
+  const console = main.querySelector(".console");
+
+  if (turn.current.isReal) {
+    const message = document.createElement("div");
+    message.textContent = "Wating for attack...";
+    console.replaceChildren(message);
+  }
 };
 
 export const renderFooter = () => {

@@ -93,7 +93,7 @@ main {
   background-color: #00f;
 }
 
-.button-container {
+.console {
   grid-area: button-container;
 
   background-color: lightgreen;
