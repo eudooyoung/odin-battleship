@@ -83,6 +83,20 @@ export const updateOcean = (board) => {
       }
     }
   }
+
+  const missedIter = board.missed.values();
+  for (let missedCoord of missedIter) {
+    const missedArr = JSON.parse(missedCoord);
+    const row = missedArr[0] + 1;
+    const col = missedArr[1] + 1;
+    console.log(`${row}${col}`);
+    const square = oceanDOM.querySelector(
+      `[data-rows="${row}"][data-columns="${col}"]`,
+    );
+    console.log(square);
+    square.classList.add("missed");
+    square.textContent = ".";
+  }
 };
 
 export const updateTarget = (board) => {
@@ -101,6 +115,18 @@ export const updateTarget = (board) => {
         square.classList.add("attacked");
       }
     }
+  }
+
+  const missedIter = board.missed.values();
+  for (let missedCoord of missedIter) {
+    const missedArr = JSON.parse(missedCoord);
+    const row = missedArr[0] + 1;
+    const col = missedArr[1] + 1;
+    const square = targetDOM.querySelector(
+      `[data-rows="${row}"][data-columns="${col}"]`,
+    );
+    square.classList.add("missed");
+    square.textContent = ".";
   }
 };
 
