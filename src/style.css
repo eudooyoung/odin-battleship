@@ -85,16 +85,13 @@ main {
   background-color: #f00;
 }
 
-.ocean .attacked {
+.ocean .hit {
   color: #fff;
 }
 
-.ocean .missed {
-  content: ".";
-}
-
-.target .attacked {
+.target .hit {
   background-color: #00f;
+  color: #fff;
 }
 
 .console {
