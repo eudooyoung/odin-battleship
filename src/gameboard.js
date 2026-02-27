@@ -69,8 +69,9 @@ export default class Gameboard {
 
     const targetStr = JSON.stringify(target);
     const hitSet = this.#hitSet;
+    const missed = this.#missed;
 
-    if (hitSet.has(targetStr)) {
+    if (hitSet.has(targetStr) || missed.has(targetStr)) {
       throw Error("The square has already been attacked");
     }
 
@@ -87,7 +88,7 @@ export default class Gameboard {
       }
     }
 
-    this.#missed.add(targetStr);
+    missed.add(targetStr);
     return false;
   };
 
