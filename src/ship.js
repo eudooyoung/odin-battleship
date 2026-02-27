@@ -6,6 +6,7 @@ export default class Ship {
     "SUBMARINE",
     "PATROL BOAT",
   ];
+  #typeCode;
   #type;
   #length;
   #hits;
@@ -16,6 +17,7 @@ export default class Ship {
       throw new TypeError("Given typeCode is invalid");
     }
 
+    this.#typeCode = typeCode;
     this.#type = Ship.#TYPES[typeCode];
     switch (typeCode) {
       case 0:
@@ -52,6 +54,10 @@ export default class Ship {
 
   get isSunk() {
     return this.#isSunk;
+  }
+
+  get typeCode() {
+    return this.#typeCode;
   }
 
   hit = () => {
