@@ -146,14 +146,14 @@ const renderConsole = () => {
   return console;
 };
 
-export const updateConsole = (turn) => {
+export const updateConsole = (e = null) => {
   const console = main.querySelector(".console");
 
-  if (turn.current.isReal) {
-    const message = document.createElement("div");
-    message.textContent = "Wating for attack...";
-    console.replaceChildren(message);
+  const message = document.createElement("div");
+  if (e) {
+    message.textContent = e.message;
   }
+  console.replaceChildren(message);
 };
 
 export const renderFooter = () => {

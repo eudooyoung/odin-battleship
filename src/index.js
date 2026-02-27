@@ -52,14 +52,14 @@ const play = async () => {
   while (playerBoard.sunk.size < 5 && computerBoard.sunk.size < 5) {
     try {
       const square = await getSquareFromListener();
-      playerAttack(computerBoard, square);
+      await playerAttack(computerBoard, square);
       computerAttack(playerBoard);
 
       updateOcean(playerBoard);
       updateTarget(computerBoard);
-      updateConsole(turn);
+      updateConsole();
     } catch (e) {
-      console.error(e);
+      updateConsole(e);
     }
   }
 };
@@ -74,7 +74,7 @@ const getSquareFromListener = () => {
   });
 };
 
-const playerAttack = (board, square) => {
+const playerAttack = async (board, square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
   board.recieveAttack([row, col]);
