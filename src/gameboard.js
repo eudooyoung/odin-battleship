@@ -2,15 +2,17 @@ import Ship from "./ship.js";
 
 export default class Gameboard {
   #ships;
-  #ocean;
   #occupied;
+  #attacked;
   #missed;
+  #sunk;
 
   constructor() {
     this.#ships = new Map();
-    this.#ocean = new Map();
     this.#occupied = new Set();
+    this.#attacked = new Set();
     this.#missed = new Set();
+    this.#sunk = new Set();
   }
 
   placeShip = (start, typeCode, isVertical = true) => {
@@ -66,15 +68,16 @@ export default class Gameboard {
     }
 
     const targetStr = JSON.stringify(target);
+    const attacked = this.#attacked;
 
-    for (let shipCode of this.#ships.keys()) {
-      const coordStatus = this.#ocean.get(shipCode);
-      if (coordStatus.has(targetStr)) {
-        coordStatus.set(targetStr, false);
-        const ship = this.#ships.get(shipCode);
+    for (let status of this.#ships.values()) {
+      const ship = status.ship;
+      const coords = status.coords;
+      if (coords.includes(targetStr)) {
         ship.hit();
+        attacked.add(targetStr);
         if (ship.isSunk) {
-          this.#ships.delete(shipCode);
+          this.#sunk.add();
         }
         return true;
       }
@@ -94,15 +97,19 @@ export default class Gameboard {
     return this.#ships;
   }
 
-  get ocean() {
-    return this.#ocean;
-  }
-
   get occupied() {
     return this.#occupied;
   }
 
+  get attacked() {
+    return this.#attacked;
+  }
+
   get missed() {
     return this.#missed;
+  }
+
+  get sunk() {
+    return this.#sunk;
   }
 }

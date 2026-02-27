@@ -15,7 +15,7 @@ describe("gameboard test", () => {
     expect(board.ocean).toEqual(new Map());
   });
 
-  it.only("placeShip function", () => {
+  it("placeShip function", () => {
     board.placeShip([0, 0], 0);
     const ship = board.ships.get(0).ship;
     expect(ship.type).toBe("CARRIER");
@@ -60,19 +60,17 @@ describe("gameboard test", () => {
     expect(board.missed.has("[0,1]")).toBe(true);
   });
 
-  it("sunk ships tracking", () => {
-    expect(board.ships).toBeInstanceOf(Map);
+  it.only("sunk ships tracking", () => {
     board.placeShip([0, 0], 0);
-    expect(board.ocean.get(0).get("[0,0]")).toBe(true);
+    expect(board.ships.get(0).ship.isSunk).toBe(false);
     board.placeShip([0, 1], 1);
-    expect(board.ships.size).toBe(2);
     for (let i = 0; i < 5; i++) {
       board.recieveAttack([i, 0]);
     }
     for (let i = 0; i < 4; i++) {
       board.recieveAttack([i, 1]);
     }
-    expect(board.ocean.get(0).get("[0,0]")).toBe(false);
-    expect(board.ships.size).toBe(0);
+    expect(board.ships.get(0).ship.isSunk).toBe(true);
+    expect(board.sunk.has(0)).toBe(true);
   });
 });
