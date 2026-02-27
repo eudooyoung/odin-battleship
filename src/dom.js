@@ -17,9 +17,9 @@ export const renderMain = () => {
   const targetDesc = renderDesc("target");
   const ocean = renderBoard("ocean");
   const target = renderBoard("target");
-  const buttonContainer = renderButtonContainer();
+  const console = renderConsole();
 
-  boardContainer.append(oceanDesc, targetDesc, ocean, target, buttonContainer);
+  boardContainer.append(oceanDesc, targetDesc, ocean, target, console);
   main.append(boardContainer);
 };
 
@@ -64,17 +64,102 @@ const renderIndices = (board) => {
   }
 };
 
-const renderButtonContainer = () => {
-  const buttonContainer = document.createElement("div");
-  buttonContainer.classList.add("button-container");
+export const updateOcean = (board) => {
+  const oceanDOM = main.querySelector(".board.ocean");
+  const ocean = board.ocean;
+  const shipStatuses = ocean.values();
+  for (let shipStatus of shipStatuses) {
+    for (let coord of shipStatus.keys()) {
+      const coordArr = JSON.parse(coord);
+      const row = coordArr[0];
+      const col = coordArr[1];
+      const square = oceanDOM.querySelector(
+        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
+      );
+      square.classList.add("shipped");
+      if (!shipStatus.get(coord)) {
+        square.textContent = "X";
+        square.classList.add("attacked");
+      }
+    }
+  }
+
+  const missed = board.missed;
+  for (let missedCoord of missed) {
+    const missedArr = JSON.parse(missedCoord);
+    const row = missedArr[0] + 1;
+    const col = missedArr[1] + 1;
+    const square = oceanDOM.querySelector(
+      `[data-rows="${row}"][data-columns="${col}"]`,
+    );
+    square.classList.add("missed");
+    square.textContent = ".";
+  }
+};
+
+export const updateTarget = (board) => {
+  const targetDOM = main.querySelector(".board.target");
+  const target = board.ocean;
+  const shipStatuses = target.values();
+  for (let shipStatus of shipStatuses) {
+    for (let coord of shipStatus.keys()) {
+      const coordArr = JSON.parse(coord);
+      const row = coordArr[0];
+      const col = coordArr[1];
+      const square = targetDOM.querySelector(
+        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
+      );
+      if (!shipStatus.get(coord)) {
+        square.classList.add("attacked");
+      }
+    }
+  }
+
+  const missed = board.missed;
+  for (let missedCoord of missed) {
+    const missedArr = JSON.parse(missedCoord);
+    const row = missedArr[0] + 1;
+    const col = missedArr[1] + 1;
+    const square = targetDOM.querySelector(
+      `[data-rows="${row}"][data-columns="${col}"]`,
+    );
+    square.classList.add("missed");
+    square.textContent = ".";
+  }
+};
+
+export const mark = (isValidAttack, square) => {
+  if (isValidAttack) {
+    square.classList.add("show");
+    return;
+  }
+
+  if (!isValidAttack) {
+    square.textContent = ".";
+  }
+};
+
+const renderConsole = () => {
+  const console = document.createElement("div");
+  console.classList.add("console");
 
   const startButton = document.createElement("button");
   startButton.textContent = "Start Game";
   startButton.classList.add("button", "start");
 
-  buttonContainer.append(startButton);
+  console.append(startButton);
 
-  return buttonContainer;
+  return console;
+};
+
+export const updateConsole = (turn) => {
+  const console = main.querySelector(".console");
+
+  if (turn.current.isReal) {
+    const message = document.createElement("div");
+    message.textContent = "Wating for attack...";
+    console.replaceChildren(message);
+  }
 };
 
 export const renderFooter = () => {

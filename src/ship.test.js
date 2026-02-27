@@ -6,6 +6,7 @@ describe("ship test", () => {
 
     const ship = new Ship(0);
     expect(ship).toBeInstanceOf(Ship);
+    expect(ship.typeCode).toBe(0);
     expect(ship.type).toBe("CARRIER");
     expect(ship.length).toBe(5);
 

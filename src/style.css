@@ -81,7 +81,19 @@ main {
   align-items: center;
 }
 
-.button-container {
+.ocean .shipped {
+  background-color: #f00;
+}
+
+.ocean .shipped.attacked {
+  color: #fff;
+}
+
+.target .attacked {
+  background-color: #00f;
+}
+
+.console {
   grid-area: button-container;
 
   background-color: lightgreen;

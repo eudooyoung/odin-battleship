@@ -2,13 +2,17 @@ import Ship from "./ship.js";
 
 export default class Gameboard {
   #ships;
-  #ocean;
+  #occupied;
+  #attacked;
   #missed;
+  #sunk;
 
   constructor() {
     this.#ships = new Map();
-    this.#ocean = new Map();
+    this.#occupied = new Set();
+    this.#attacked = new Set();
     this.#missed = new Set();
+    this.#sunk = new Set();
   }
 
   placeShip = (start, typeCode, isVertical = true) => {
@@ -23,20 +27,21 @@ export default class Gameboard {
       throw new Error("The ship has already been used");
     }
 
-    this.#ships.set(typeCode, ship);
-    this.#ocean.set(typeCode, new Map());
-    const coordStatus = this.#ocean.get(typeCode);
+    this.#ships.set(typeCode, { ship: ship, coords: new Array() });
+    const coords = this.#ships.get(typeCode).coords;
+    const occupied = this.#occupied;
 
     if (isVertical) {
       for (let i = 0; i < ship.length; i++) {
         const coord = [row + i, col];
         const coordStr = JSON.stringify(coord);
-        if (this.#isOverlapping(coordStr)) {
+        if (occupied.has(coordStr)) {
+          this.#ships.get(typeCode).coords.forEach(occupied.delete);
           this.#ships.delete(typeCode);
-          this.#ocean.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }
-        coordStatus.set(coordStr, true);
+        coords.push(coordStr);
+        occupied.add(coordStr);
       }
     }
 
@@ -44,22 +49,15 @@ export default class Gameboard {
       for (let i = 0; i < ship.length; i++) {
         const coord = [row, col + i];
         const coordStr = JSON.stringify(coord);
-        if (this.#isOverlapping(coordStr)) {
+        if (occupied.has(coordStr)) {
+          this.#ships.get(typeCode).coords.forEach(occupied.delete);
           this.#ships.delete(typeCode);
-          this.#ocean.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }
-        coordStatus.set(coordStr, true);
+        coords.push(coordStr);
+        occupied.add(coordStr);
       }
     }
-  };
-
-  #isOverlapping = (target) => {
-    const occupied = this.#ocean.values();
-    for (let coordStatus of occupied) {
-      if (coordStatus.has(target)) return true;
-    }
-    return false;
   };
 
   recieveAttack = (target) => {
@@ -70,15 +68,16 @@ export default class Gameboard {
     }
 
     const targetStr = JSON.stringify(target);
+    const attacked = this.#attacked;
 
-    for (let shipCode of this.#ships.keys()) {
-      const coordStatus = this.#ocean.get(shipCode);
-      if (coordStatus.has(targetStr)) {
-        coordStatus.set(targetStr, false);
-        const ship = this.#ships.get(shipCode);
+    for (let status of this.#ships.values()) {
+      const ship = status.ship;
+      const coords = status.coords;
+      if (coords.includes(targetStr)) {
         ship.hit();
+        attacked.add(targetStr);
         if (ship.isSunk) {
-          this.#ships.delete(shipCode);
+          this.#sunk.add(ship.typeCode);
         }
         return true;
       }
@@ -98,11 +97,19 @@ export default class Gameboard {
     return this.#ships;
   }
 
-  get ocean() {
-    return this.#ocean;
+  get occupied() {
+    return this.#occupied;
+  }
+
+  get attacked() {
+    return this.#attacked;
   }
 
   get missed() {
     return this.#missed;
+  }
+
+  get sunk() {
+    return this.#sunk;
   }
 }

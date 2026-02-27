@@ -1,6 +1,19 @@
 import "./style.css";
-import { header, main, footer } from "./dom.js";
-import { renderHeader, renderMain, renderFooter } from "./dom.js";
+import {
+  header,
+  main,
+  footer,
+  renderHeader,
+  renderMain,
+  renderFooter,
+  updateOcean,
+  updateTarget,
+  mark,
+  updateConsole,
+} from "./dom.js";
+import Player from "./player.js";
+
+const turn = { current: null };
 
 const init = () => {
   const body = document.body;
@@ -12,7 +25,67 @@ const init = () => {
   body.append(header, main, footer);
 };
 
-const play = () => {};
+const play = async () => {
+  const player = new Player(true);
+  const computer = new Player();
+
+  const playerBoard = player.board;
+  playerBoard.placeShip([0, 0], 0);
+  playerBoard.placeShip([0, 1], 1);
+  playerBoard.placeShip([0, 2], 2);
+  playerBoard.placeShip([0, 3], 3);
+  playerBoard.placeShip([0, 4], 4);
+
+  const computerBoard = computer.board;
+  computerBoard.placeShip([0, 0], 0);
+  computerBoard.placeShip([0, 1], 1);
+  computerBoard.placeShip([0, 2], 2);
+  computerBoard.placeShip([0, 3], 3);
+  computerBoard.placeShip([0, 4], 4);
+
+  turn.current = player;
+
+  updateOcean(playerBoard);
+  updateTarget(computerBoard);
+  updateConsole(turn);
+
+  while (playerBoard.ships.size > 0 && computerBoard.ships.size > 0) {
+    const square = await getSquareFromListener();
+    playerAttack(computerBoard, square);
+    computerAttack(playerBoard);
+
+    updateOcean(playerBoard);
+    updateTarget(computerBoard);
+    updateConsole(turn);
+  }
+};
+
+const getSquareFromListener = () => {
+  return new Promise((resolve) => {
+    main.addEventListener("click", function attackListener(e) {
+      const square = e.target.closest(".target .square");
+      resolve(square);
+      main.removeEventListener("click", attackListener);
+    });
+  });
+};
+
+const playerAttack = (board, square) => {
+  const row = square.dataset.rows - 1;
+  const col = square.dataset.columns - 1;
+  board.recieveAttack([row, col]);
+};
+
+const computerAttack = (board) => {
+  const row = Math.floor(Math.random() * 10);
+  const col = Math.floor(Math.random() * 10);
+  const coord = [row, col];
+  const coordStr = JSON.stringify(coord);
+  if (board.missed.has(coordStr)) {
+    board.ocean.keys();
+  }
+  board.recieveAttack([row, col]);
+};
 
 main.addEventListener("click", (e) => {
   const startButton = e.target.closest("button", "start");
