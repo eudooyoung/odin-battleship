@@ -37,7 +37,7 @@ describe("gameboard test", () => {
     expect(() => board.placeShip([0, 0], 2)).toThrow(Error);
   });
 
-  it("recieveAttack function", () => {
+  it.only("recieveAttack function", () => {
     board.placeShip([0, 0], 0);
     expect(board.recieveAttack([0, 0])).toBe(true);
     expect(board.recieveAttack([1, 0])).toBe(true);
@@ -49,6 +49,7 @@ describe("gameboard test", () => {
 
     expect(() => board.recieveAttack([-1, -3])).toThrow(RangeError);
     expect(() => board.recieveAttack([11, 10])).toThrow(RangeError);
+    expect(() => board.recieveAttack([0, 0])).toThrow(Error);
   });
 
   it("missed attacks tracking", () => {

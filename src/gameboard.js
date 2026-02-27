@@ -70,6 +70,10 @@ export default class Gameboard {
     const targetStr = JSON.stringify(target);
     const hitSet = this.#hitSet;
 
+    if (hitSet.has(targetStr)) {
+      throw Error("The square has already been attacked");
+    }
+
     for (let status of this.#ships.values()) {
       const ship = status.ship;
       const coords = status.coords;
