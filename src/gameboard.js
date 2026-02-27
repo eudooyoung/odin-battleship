@@ -3,11 +3,13 @@ import Ship from "./ship.js";
 export default class Gameboard {
   #ships;
   #ocean;
+  #occupied;
   #missed;
 
   constructor() {
     this.#ships = new Map();
     this.#ocean = new Map();
+    this.#occupied = new Set();
     this.#missed = new Set();
   }
 
@@ -24,21 +26,20 @@ export default class Gameboard {
     }
 
     this.#ships.set(typeCode, { ship: ship, coords: new Array() });
-    // this.#ocean.set(typeCode, new Map());
-    // const coordStatus = this.#ocean.get(typeCode);
     const coords = this.#ships.get(typeCode).coords;
+    const occupied = this.#occupied;
 
     if (isVertical) {
       for (let i = 0; i < ship.length; i++) {
         const coord = [row + i, col];
         const coordStr = JSON.stringify(coord);
-        if (this.#isOverlapping(coordStr)) {
+        if (occupied.has(coordStr)) {
+          this.#ships.get(typeCode).coords.forEach(occupied.delete);
           this.#ships.delete(typeCode);
-          // this.#ocean.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }
-        // coordStatus.set(coordStr, true);
         coords.push(coordStr);
+        occupied.add(coordStr);
       }
     }
 
@@ -46,23 +47,15 @@ export default class Gameboard {
       for (let i = 0; i < ship.length; i++) {
         const coord = [row, col + i];
         const coordStr = JSON.stringify(coord);
-        if (this.#isOverlapping(coordStr)) {
+        if (occupied.has(coordStr)) {
+          this.#ships.get(typeCode).coords.forEach(occupied.delete);
           this.#ships.delete(typeCode);
-          // this.#ocean.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }
-        // coordStatus.set(coordStr, true);
         coords.push(coordStr);
+        occupied.add(coordStr);
       }
     }
-  };
-
-  #isOverlapping = (target) => {
-    const occupied = this.#ocean.values();
-    for (let coordStatus of occupied) {
-      if (coordStatus.has(target)) return true;
-    }
-    return false;
   };
 
   recieveAttack = (target) => {
@@ -103,6 +96,10 @@ export default class Gameboard {
 
   get ocean() {
     return this.#ocean;
+  }
+
+  get occupied() {
+    return this.#occupied;
   }
 
   get missed() {
