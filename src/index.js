@@ -77,12 +77,15 @@ const playerAttack = (board, square) => {
 };
 
 const computerAttack = (board) => {
-  const row = Math.floor(Math.random() * 10);
-  const col = Math.floor(Math.random() * 10);
-  const coord = [row, col];
-  const coordStr = JSON.stringify(coord);
-  if (board.missed.has(coordStr)) {
-    board.ocean.keys();
+  let row = Math.floor(Math.random() * 10);
+  let col = Math.floor(Math.random() * 10);
+  let coord = [row, col];
+  let coordStr = JSON.stringify(coord);
+  while (board.missed.has(coordStr) || board.attacked.has(coordStr)) {
+    row = Math.floor(Math.random() * 10);
+    col = Math.floor(Math.random() * 10);
+    coord = [row, col];
+    coordStr = JSON.stringify(coord);
   }
   board.recieveAttack([row, col]);
 };

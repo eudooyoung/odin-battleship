@@ -65,36 +65,29 @@ const renderIndices = (board) => {
 };
 
 export const updateOcean = (board) => {
-  const oceanDOM = main.querySelector(".board.ocean");
-  const ocean = board.ocean;
-  const shipStatuses = ocean.values();
-  for (let shipStatus of shipStatuses) {
-    for (let coord of shipStatus.keys()) {
-      const coordArr = JSON.parse(coord);
-      const row = coordArr[0];
-      const col = coordArr[1];
-      const square = oceanDOM.querySelector(
-        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
-      );
-      square.classList.add("shipped");
-      if (!shipStatus.get(coord)) {
-        square.textContent = "X";
-        square.classList.add("attacked");
-      }
-    }
+  const occupied = board.occupied;
+  for (let coord of occupied) {
+    const square = getSquareFromCoord(coord);
+    square.classList.add("occupied");
   }
+
+  const attacked = board.attacked;
 
   const missed = board.missed;
   for (let missedCoord of missed) {
-    const missedArr = JSON.parse(missedCoord);
-    const row = missedArr[0] + 1;
-    const col = missedArr[1] + 1;
-    const square = oceanDOM.querySelector(
-      `[data-rows="${row}"][data-columns="${col}"]`,
-    );
-    square.classList.add("missed");
-    square.textContent = ".";
+    const missedSquare = getSquareFromCoord(missedCoord);
+    missedSquare.classList.add("missed");
   }
+};
+
+const getSquareFromCoord = (coord) => {
+  const coordArr = JSON.parse(coord);
+  const row = coordArr[0] + 1;
+  const col = coordArr[1] + 1;
+  const square = main.querySelector(
+    `[data-rows="${row}][data-columns="${col}]`,
+  );
+  return square;
 };
 
 export const updateTarget = (board) => {

@@ -81,12 +81,16 @@ main {
   align-items: center;
 }
 
-.ocean .shipped {
+.ocean .occupied {
   background-color: #f00;
 }
 
-.ocean .shipped.attacked {
+.ocean .attacked {
   color: #fff;
+}
+
+.ocean .missed {
+  content: ".";
 }
 
 .target .attacked {
