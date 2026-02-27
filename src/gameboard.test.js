@@ -17,10 +17,20 @@ describe("gameboard test", () => {
 
   it.only("placeShip function", () => {
     board.placeShip([0, 0], 0);
-    expect(board.ocean.get(0).size).toBe(5);
+    const ship = board.ships.get(0).ship;
+    expect(ship.type).toBe("CARRIER");
+    const coords = board.ships.get(0).coords;
+    for (let i = 0; i < ship.length; i++) {
+      expect(coords[i]).toBe(`[${i},0]`);
+    }
 
     board.placeShip([0, 1], 1, false);
-    expect(board.ocean.get(1).size).toBe(4);
+    const ship2 = board.ships.get(1).ship;
+    expect(ship2.type).toBe("BATTLESHIP");
+    const coords2 = board.ships.get(1).coords;
+    for (let i = 0; i < ship2.length; i++) {
+      expect(coords2[i]).toBe(`[0,${1 + i}]`);
+    }
 
     // cannot place duplicate type of ship
     expect(() => board.placeShip([0, 5], 0)).toThrow(Error);

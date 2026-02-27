@@ -23,9 +23,10 @@ export default class Gameboard {
       throw new Error("The ship has already been used");
     }
 
-    this.#ships.set(typeCode, ship);
-    this.#ocean.set(typeCode, new Map());
-    const coordStatus = this.#ocean.get(typeCode);
+    this.#ships.set(typeCode, { ship: ship, coords: new Array() });
+    // this.#ocean.set(typeCode, new Map());
+    // const coordStatus = this.#ocean.get(typeCode);
+    const coords = this.#ships.get(typeCode).coords;
 
     if (isVertical) {
       for (let i = 0; i < ship.length; i++) {
@@ -33,10 +34,11 @@ export default class Gameboard {
         const coordStr = JSON.stringify(coord);
         if (this.#isOverlapping(coordStr)) {
           this.#ships.delete(typeCode);
-          this.#ocean.delete(typeCode);
+          // this.#ocean.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }
-        coordStatus.set(coordStr, true);
+        // coordStatus.set(coordStr, true);
+        coords.push(coordStr);
       }
     }
 
@@ -46,10 +48,11 @@ export default class Gameboard {
         const coordStr = JSON.stringify(coord);
         if (this.#isOverlapping(coordStr)) {
           this.#ships.delete(typeCode);
-          this.#ocean.delete(typeCode);
+          // this.#ocean.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }
-        coordStatus.set(coordStr, true);
+        // coordStatus.set(coordStr, true);
+        coords.push(coordStr);
       }
     }
   };
