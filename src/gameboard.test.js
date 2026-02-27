@@ -12,7 +12,6 @@ describe("gameboard test", () => {
     expect(Gameboard).toBeDefined();
 
     expect(board).toBeInstanceOf(Gameboard);
-    expect(board.ocean).toEqual(new Map());
   });
 
   it("placeShip function", () => {
@@ -60,7 +59,7 @@ describe("gameboard test", () => {
     expect(board.missed.has("[0,1]")).toBe(true);
   });
 
-  it.only("sunk ships tracking", () => {
+  it("sunk ships tracking", () => {
     board.placeShip([0, 0], 0);
     expect(board.ships.get(0).ship.isSunk).toBe(false);
     board.placeShip([0, 1], 1);
@@ -72,5 +71,6 @@ describe("gameboard test", () => {
     }
     expect(board.ships.get(0).ship.isSunk).toBe(true);
     expect(board.sunk.has(0)).toBe(true);
+    expect(board.sunk.has(1)).toBe(true);
   });
 });

@@ -77,7 +77,7 @@ export default class Gameboard {
         ship.hit();
         attacked.add(targetStr);
         if (ship.isSunk) {
-          this.#sunk.add();
+          this.#sunk.add(ship.typeCode);
         }
         return true;
       }
