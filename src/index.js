@@ -10,6 +10,7 @@ import {
   updateTarget,
   updateConsole,
   clearMain,
+  markShipCandidate,
 } from "./dom.js";
 import Player from "./player.js";
 import Ship from "./ship.js";
@@ -68,6 +69,13 @@ const placeShipFromDOM = async (playerBoard) => {
   let shippingMessage;
   for (let i = 0; i < 5; i++) {
     shippingMessage = `Choose square to ship ${Ship.TYPES[i]}...`;
+    main.addEventListener("mouseover", (e) => {
+      const square = e.target.closest(".ocean .square");
+      if (square) {
+        markShipCandidate(square, i);
+      }
+    });
+
     while (true) {
       try {
         updateConsole({ shippingMessage });

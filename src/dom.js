@@ -64,6 +64,14 @@ const renderIndices = (board) => {
   }
 };
 
+export const markShipCandidate = (startSquare) => {
+  const row = startSquare.dataset.rows;
+  const col = startSquare.dataset.columns;
+  if (row !== "0" && col !== "0") {
+    console.log(`${row}, ${col}`);
+  }
+};
+
 export const updateOcean = (board) => {
   const occupied = board.occupied;
   for (let coord of occupied) {
