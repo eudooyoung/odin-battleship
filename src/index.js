@@ -81,10 +81,9 @@ const getSquareFromListener = () => {
 const playerAttack = async (board, square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
-  if (board.recieveAttack([row, col])) {
-    return `Hit!`;
-  } else {
-    return "Missed.";
+  const attackResult = board.recieveAttack([row, col]);
+  if (attackResult !== null) {
+    return board.ships.get(attackResult);
   }
 };
 
