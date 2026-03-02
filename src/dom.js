@@ -75,7 +75,7 @@ export const updateOcean = (board) => {
   for (let hitCoord of hitSet) {
     const hitSquare = getOceanSquareFromCoord(hitCoord);
     hitSquare.classList.add("hit");
-    hitSquare.textContent = "X";
+    hitSquare.textContent = "†";
   }
 
   const missed = board.missed;
@@ -91,7 +91,7 @@ export const updateTarget = (board) => {
   for (let hitCoord of hitSet) {
     const hitSquare = getTargetSquareFromCoord(hitCoord);
     hitSquare.classList.add("hit");
-    hitSquare.textContent = "X";
+    hitSquare.textContent = "†";
   }
 
   const missed = board.missed;
@@ -122,17 +122,6 @@ const getTargetSquareFromCoord = (coord) => {
   return square;
 };
 
-export const mark = (isValidAttack, square) => {
-  if (isValidAttack) {
-    square.classList.add("show");
-    return;
-  }
-
-  if (!isValidAttack) {
-    square.textContent = ".";
-  }
-};
-
 const renderConsole = () => {
   const console = document.createElement("div");
   console.classList.add("console");
@@ -146,14 +135,44 @@ const renderConsole = () => {
   return console;
 };
 
-export const updateConsole = (e = null) => {
+export const updateConsole = (messageObject) => {
   const console = main.querySelector(".console");
 
-  const message = document.createElement("div");
-  if (e) {
-    message.textContent = e.message;
+  if (!messageObject) {
+    const button = console.querySelector(".button.start");
+    console.removeChild(button);
+    return;
   }
-  console.replaceChildren(message);
+
+  if (messageObject.playerMessage || messageObject.computermessage) {
+    const playerMessage = document.createElement("div");
+    const computerMessage = document.createElement("div");
+    playerMessage.textContent = messageObject.playerMessage;
+    computerMessage.textContent = messageObject.computerMessage;
+    console.replaceChildren(playerMessage, computerMessage);
+    return;
+  }
+
+  if (messageObject.errorMessage) {
+    const errorMessage = document.createElement("div");
+    errorMessage.textContent = messageObject.errorMessage;
+    console.replaceChildren(errorMessage);
+    return;
+  }
+
+  if (messageObject.resultMessage) {
+    const resultMessage = document.createElement("div");
+    resultMessage.textContent = messageObject.resultMessage;
+    const restartButton = document.createElement("button");
+    restartButton.textContent = "Restart";
+    restartButton.classList.add("button", "restart");
+    console.replaceChildren(resultMessage, restartButton);
+    return;
+  }
+};
+
+export const clearMain = () => {
+  main.innerHTML = "";
 };
 
 export const renderFooter = () => {

@@ -8,12 +8,10 @@ import {
   renderFooter,
   updateOcean,
   updateTarget,
-  mark,
   updateConsole,
+  clearMain,
 } from "./dom.js";
 import Player from "./player.js";
-
-const turn = { current: null };
 
 const init = () => {
   const body = document.body;
@@ -43,24 +41,30 @@ const play = async () => {
   computerBoard.placeShip([0, 3], 3);
   computerBoard.placeShip([0, 4], 4);
 
-  turn.current = player;
-
   updateOcean(playerBoard);
   updateTarget(computerBoard);
-  updateConsole(turn);
+  updateConsole();
 
   while (playerBoard.sunk.size < 5 && computerBoard.sunk.size < 5) {
     try {
       const square = await getSquareFromListener();
-      await playerAttack(computerBoard, square);
-      computerAttack(playerBoard);
+      const playerMessage = await playerAttack(computerBoard, square);
+      const computerMessage = computerAttack(playerBoard);
 
       updateOcean(playerBoard);
       updateTarget(computerBoard);
-      updateConsole();
+      updateConsole({ playerMessage, computerMessage });
     } catch (e) {
-      updateConsole(e);
+      updateConsole({ errorMessage: e.message });
     }
+  }
+
+  if (playerBoard.sunk.size === 5) {
+    updateConsole({ resultMessage: "computer win!" });
+  }
+
+  if (computerBoard.sunk.size === 5) {
+    updateConsole({ resultMessage: "player win!" });
   }
 };
 
@@ -77,7 +81,11 @@ const getSquareFromListener = () => {
 const playerAttack = async (board, square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
-  board.recieveAttack([row, col]);
+  if (board.recieveAttack([row, col])) {
+    return `Hit!`;
+  } else {
+    return "Missed.";
+  }
 };
 
 const computerAttack = (board) => {
@@ -91,12 +99,28 @@ const computerAttack = (board) => {
     coord = [row, col];
     coordStr = JSON.stringify(coord);
   }
-  board.recieveAttack([row, col]);
+
+  if (board.recieveAttack([row, col])) {
+    return `Hit!`;
+  } else {
+    return "Missed.";
+  }
+};
+
+const refreshBoard = () => {
+  clearMain();
+  renderMain();
 };
 
 main.addEventListener("click", (e) => {
-  const startButton = e.target.closest("button", "start");
+  const startButton = e.target.closest(".button.start");
   if (startButton) {
+    play();
+  }
+
+  const restartButton = e.target.closest(".button.restart");
+  if (restartButton) {
+    refreshBoard();
     play();
   }
 });

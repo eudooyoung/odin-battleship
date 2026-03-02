@@ -82,16 +82,24 @@ main {
 }
 
 .ocean .occupied {
-  background-color: #f00;
+  background-color: lightpink;
 }
 
 .ocean .hit {
-  color: #fff;
+  background-color: #f00;
 }
 
 .target .hit {
   background-color: #00f;
+}
+
+.square.hit {
   color: #fff;
+  font-size: 1.8rem;
+}
+
+.square.missed {
+  background-color: #ccc;
 }
 
 .console {
@@ -100,6 +108,10 @@ main {
   background-color: lightgreen;
   display: grid;
   place-content: center;
+}
+
+.message-container {
+  white-space: pre-wrap;
 }
 
 footer {
