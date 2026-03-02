@@ -56,11 +56,11 @@ const play = async () => {
   }
 
   if (playerBoard.sunk.size === 5) {
-    updateConsole({ resultMessage: "computer win!" });
+    updateConsole({ resultMessage: "Computer Win!" });
   }
 
   if (computerBoard.sunk.size === 5) {
-    updateConsole({ resultMessage: "player win!" });
+    updateConsole({ resultMessage: "Player Win!" });
   }
 };
 
@@ -78,12 +78,12 @@ const placeShipFromDOM = async (playerBoard) => {
         updateOcean(playerBoard);
         break;
       } catch (e) {
-        console.log(e);
+        console.error(e);
         updateConsole({ errorMessage: e.message });
       }
     }
   }
-  shippingMessage = "Shipping has been completed. Game start.";
+  shippingMessage = "Shipping has been completed. Game Start!";
   updateConsole({ shippingMessage });
 };
 

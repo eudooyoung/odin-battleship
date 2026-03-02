@@ -16,9 +16,7 @@ export default class Gameboard {
   }
 
   placeShip = (start, typeCode, isVertical = true) => {
-    const row = start[0];
-    const col = start[1];
-    if (!this.#isCoordValid(row, col)) {
+    if (!this.#isCoordValid(start)) {
       throw new RangeError("The given start coordinate is inappropriate");
     }
 
@@ -30,16 +28,19 @@ export default class Gameboard {
     this.#ships.set(typeCode, { ship: ship, coords: new Array() });
     const coords = this.#ships.get(typeCode).coords;
     const occupied = this.#occupied;
+    const row = start[0];
+    const col = start[1];
 
     if (isVertical) {
+      if (!this.#isCoordValid([row + ship.length - 1, col])) {
+        this.ships.delete(typeCode);
+        throw new RangeError("Ship coordinates exceed the board");
+      }
       for (let i = 0; i < ship.length; i++) {
         const coord = [row + i, col];
         const coordStr = JSON.stringify(coord);
         if (occupied.has(coordStr)) {
-          this.#ships
-            .get(typeCode)
-            .coords.forEach((coord) => occupied.delete(coord));
-          this.#ships.delete(typeCode);
+          this.#rollBackPlacingShip(typeCode);
           throw Error("The coordinate has already been occupied");
         }
         coords.push(coordStr);
@@ -48,12 +49,15 @@ export default class Gameboard {
     }
 
     if (!isVertical) {
+      if (!this.#isCoordValid([row, col + ship.length - 1])) {
+        this.ships.delete(typeCode);
+        throw new RangeError("Ship coordinates exceed the board");
+      }
       for (let i = 0; i < ship.length; i++) {
         const coord = [row, col + i];
         const coordStr = JSON.stringify(coord);
         if (occupied.has(coordStr)) {
-          this.#ships.get(typeCode).coords.forEach(occupied.delete);
-          this.#ships.delete(typeCode);
+          this.#rollBackPlacingShip(typeCode);
           throw Error("The coordinate has already been occupied");
         }
         coords.push(coordStr);
@@ -94,10 +98,19 @@ export default class Gameboard {
     return null;
   };
 
-  #isCoordValid = (row, col) => {
+  #isCoordValid = (coord) => {
+    const row = coord[0];
+    const col = coord[1];
     if (row < 0 || col < 0) return false;
     if (row > 9 || col > 9) return false;
     return true;
+  };
+
+  #rollBackPlacingShip = (typeCode) => {
+    this.#ships
+      .get(typeCode)
+      .coords.forEach((coord) => this.#occupied.delete(coord));
+    this.#ships.delete(typeCode);
   };
 
   get ships() {

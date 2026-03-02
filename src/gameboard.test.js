@@ -42,6 +42,9 @@ describe("gameboard test", () => {
       Error("The coordinate has already been occupied"),
     );
     expect(board.ships.has(1)).toBe(false);
+    // cannot place a ship out of board
+    expect(() => board.placeShip([9, 9], 1)).toThrow(Error);
+    expect(board.ships.has(1)).toBe(false);
   });
 
   it("recieveAttack function", () => {
