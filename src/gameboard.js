@@ -36,7 +36,9 @@ export default class Gameboard {
         const coord = [row + i, col];
         const coordStr = JSON.stringify(coord);
         if (occupied.has(coordStr)) {
-          this.#ships.get(typeCode).coords.forEach(occupied.delete);
+          this.#ships
+            .get(typeCode)
+            .coords.forEach((coord) => occupied.delete(coord));
           this.#ships.delete(typeCode);
           throw Error("The coordinate has already been occupied");
         }

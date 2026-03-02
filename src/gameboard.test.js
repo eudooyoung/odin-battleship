@@ -30,12 +30,18 @@ describe("gameboard test", () => {
     for (let i = 0; i < ship2.length; i++) {
       expect(coords2[i]).toBe(`[0,${1 + i}]`);
     }
+  });
+
+  it.only("placeShip errors", () => {
+    board.placeShip([3, 3], 0);
 
     // cannot place duplicate type of ship
     expect(() => board.placeShip([0, 5], 0)).toThrow(Error);
     // cannot place a ship overlaping another
-    board.placeShip([3, 3], 2);
-    expect(() => board.placeShip([2, 3], 3)).toThrow(Error);
+    expect(() => board.placeShip([1, 3], 1)).toThrow(
+      Error("The coordinate has already been occupied"),
+    );
+    expect(board.ships.has(1)).toBe(false);
   });
 
   it("recieveAttack function", () => {
