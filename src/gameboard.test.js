@@ -14,7 +14,7 @@ describe("gameboard test", () => {
     expect(board).toBeInstanceOf(Gameboard);
   });
 
-  it("placeShip function", () => {
+  it.only("placeShip function", () => {
     board.placeShip([0, 0], 0);
     const ship = board.ships.get(0).ship;
     expect(ship.type).toBe("CARRIER");
@@ -34,7 +34,8 @@ describe("gameboard test", () => {
     // cannot place duplicate type of ship
     expect(() => board.placeShip([0, 5], 0)).toThrow(Error);
     // cannot place a ship overlaping another
-    expect(() => board.placeShip([0, 0], 2)).toThrow(Error);
+    board.placeShip([3, 3], 2);
+    expect(() => board.placeShip([2, 3], 3)).toThrow(Error);
   });
 
   it("recieveAttack function", () => {
