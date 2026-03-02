@@ -84,12 +84,12 @@ export default class Gameboard {
         if (ship.isSunk) {
           this.#sunk.add(ship.typeCode);
         }
-        return true;
+        return ship.typeCode;
       }
     }
 
     missed.add(targetStr);
-    return false;
+    return null;
   };
 
   #isCoordValid = (row, col) => {
