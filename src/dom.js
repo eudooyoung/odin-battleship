@@ -54,13 +54,13 @@ const renderIndices = (board) => {
   const colIndices = board.querySelectorAll(`[data-rows="0"]`);
   for (let i = 1; i < colIndices.length; i++) {
     const colIndice = colIndices[i];
-    colIndice.textContent = String.fromCharCode(64 + i);
+    colIndice.textContent = i;
   }
 
   const rowIndices = board.querySelectorAll(`[data-columns="0"]`);
   for (let i = 1; i < rowIndices.length; i++) {
     const rowIndice = rowIndices[i];
-    rowIndice.textContent = i;
+    rowIndice.textContent = String.fromCharCode(64 + i);
   }
 };
 
@@ -147,14 +147,15 @@ export const updateConsole = (messageObject) => {
   if (messageObject.playerMessage || messageObject.computermessage) {
     const playerMessage = document.createElement("div");
     const computerMessage = document.createElement("div");
-    playerMessage.textContent = messageObject.playerMessage;
-    computerMessage.textContent = messageObject.computerMessage;
+    playerMessage.textContent = `Player Call: ${messageObject.playerMessage}`;
+    computerMessage.textContent = `Computer Call: ${messageObject.computerMessage}`;
     console.replaceChildren(playerMessage, computerMessage);
     return;
   }
 
   if (messageObject.errorMessage) {
     const errorMessage = document.createElement("div");
+    errorMessage.classList.add("error");
     errorMessage.textContent = messageObject.errorMessage;
     console.replaceChildren(errorMessage);
     return;

@@ -69,9 +69,12 @@ const play = async () => {
 };
 
 const getSquareFromListener = () => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     main.addEventListener("click", function attackListener(e) {
       const square = e.target.closest(".target .square");
+      if (!square) {
+        reject(new Error());
+      }
       resolve(square);
       main.removeEventListener("click", attackListener);
     });
@@ -82,9 +85,7 @@ const playerAttack = async (board, square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
   const attackResult = board.recieveAttack([row, col]);
-  if (attackResult !== null) {
-    return board.ships.get(attackResult);
-  }
+  return generateAttackResult(attackResult, row, col);
 };
 
 const computerAttack = (board) => {
@@ -99,11 +100,20 @@ const computerAttack = (board) => {
     coordStr = JSON.stringify(coord);
   }
 
-  if (board.recieveAttack([row, col])) {
-    return `Hit!`;
-  } else {
-    return "Missed.";
+  const attackResult = board.recieveAttack([row, col]);
+  return generateAttackResult(attackResult, row, col);
+};
+
+const generateAttackResult = (attackResult, row, col) => {
+  const rowAsDisplay = String.fromCharCode(row + 65);
+  const colAsDisplay = col + 1;
+  let resultMessage = `${rowAsDisplay}-${colAsDisplay}... `;
+  if (attackResult === null) {
+    resultMessage += "Missed.";
+    return resultMessage;
   }
+  resultMessage += `Hit! ${attackResult}.`;
+  return resultMessage;
 };
 
 const refreshBoard = () => {

@@ -104,14 +104,20 @@ main {
 
 .console {
   grid-area: button-container;
-
   background-color: lightgreen;
+
   display: grid;
   place-content: center;
+  grid-template-rows: 25px;
+  grid-template-columns: 30%;
 }
 
-.message-container {
-  white-space: pre-wrap;
+.console .error {
+  color: #f00;
+}
+
+button {
+  /* max-width: 50px; */
 }
 
 footer {
