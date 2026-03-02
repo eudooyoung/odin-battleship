@@ -67,9 +67,7 @@ export default class Gameboard {
   };
 
   recieveAttack = (target) => {
-    const row = target[0];
-    const col = target[1];
-    if (!this.#isCoordValid(row, col)) {
+    if (!this.#isCoordValid(target)) {
       throw new RangeError("The ship cannot be placed in range");
     }
 

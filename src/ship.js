@@ -1,10 +1,10 @@
 export default class Ship {
   static #TYPES = [
-    "CARRIER",
-    "BATTLESHIP",
-    "DESTOYER",
-    "SUBMARINE",
-    "PATROL BOAT",
+    { name: "CARRIER", length: 5 },
+    { name: "BATTLESHIP", length: 4 },
+    { name: "DESTOYER", length: 3 },
+    { name: "SUBMARINE", length: 3 },
+    { name: "PATROL BOAT", length: 2 },
   ];
   #typeCode;
   #type;
@@ -18,24 +18,8 @@ export default class Ship {
     }
 
     this.#typeCode = typeCode;
-    this.#type = Ship.#TYPES[typeCode];
-    switch (typeCode) {
-      case 0:
-        this.#length = 5;
-        break;
-      case 1:
-        this.#length = 4;
-        break;
-      case 2:
-        this.#length = 3;
-        break;
-      case 3:
-        this.#length = 3;
-        break;
-      case 4:
-        this.#length = 2;
-        break;
-    }
+    this.#type = Ship.#TYPES[typeCode].name;
+    this.#length = Ship.#TYPES[typeCode].length;
     this.#hits = 0;
     this.#isSunk = false;
   }

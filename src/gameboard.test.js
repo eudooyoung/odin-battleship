@@ -14,7 +14,7 @@ describe("gameboard test", () => {
     expect(board).toBeInstanceOf(Gameboard);
   });
 
-  it.only("placeShip function", () => {
+  it("placeShip function", () => {
     board.placeShip([0, 0], 0);
     const ship = board.ships.get(0).ship;
     expect(ship.type).toBe("CARRIER");
@@ -32,7 +32,7 @@ describe("gameboard test", () => {
     }
   });
 
-  it.only("placeShip errors", () => {
+  it("placeShip errors", () => {
     board.placeShip([3, 3], 0);
 
     // cannot place duplicate type of ship
