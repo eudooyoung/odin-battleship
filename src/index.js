@@ -12,6 +12,7 @@ import {
   clearMain,
 } from "./dom.js";
 import Player from "./player.js";
+import Ship from "./ship.js";
 
 const init = () => {
   const body = document.body;
@@ -28,11 +29,7 @@ const play = async () => {
   const computer = new Player();
 
   const playerBoard = player.board;
-  playerBoard.placeShip([0, 0], 0);
-  playerBoard.placeShip([0, 1], 1);
-  playerBoard.placeShip([0, 2], 2);
-  playerBoard.placeShip([0, 3], 3);
-  playerBoard.placeShip([0, 4], 4);
+  placeShipFromDOM(playerBoard);
 
   const computerBoard = computer.board;
   computerBoard.placeShip([0, 0], 0);
@@ -43,11 +40,10 @@ const play = async () => {
 
   updateOcean(playerBoard);
   updateTarget(computerBoard);
-  updateConsole();
 
   while (playerBoard.sunk.size < 5 && computerBoard.sunk.size < 5) {
     try {
-      const square = await getSquareFromListener();
+      const square = await getAttackSquareFromListener();
       const playerMessage = await playerAttack(computerBoard, square);
       const computerMessage = computerAttack(playerBoard);
 
@@ -68,7 +64,39 @@ const play = async () => {
   }
 };
 
-const getSquareFromListener = () => {
+const placeShipFromDOM = async (playerBoard) => {
+  let shippingMessage;
+  for (let i = 0; i < 5; i++) {
+    shippingMessage = `Choose square to ship ${Ship.TYPES[i]}...`;
+    try {
+      updateConsole({ shippingMessage });
+      const square = await getShippingSquareFromListener();
+      const row = square.dataset.rows - 1;
+      const col = square.dataset.columns - 1;
+      playerBoard.placeShip([row, col], i);
+      updateOcean(playerBoard);
+    } catch (e) {
+      updateConsole({ errorMessage: e.message });
+    }
+  }
+  shippingMessage = "Shipping has been completed. Game start.";
+  updateConsole({ shippingMessage });
+};
+
+const getShippingSquareFromListener = () => {
+  return new Promise((resolve, reject) => {
+    main.addEventListener("click", function shippingListener(e) {
+      const square = e.target.closest(".ocean .square");
+      if (!square) {
+        reject(new Error());
+      }
+      resolve(square);
+      main.removeEventListener("click", shippingListener);
+    });
+  });
+};
+
+const getAttackSquareFromListener = () => {
   return new Promise((resolve, reject) => {
     main.addEventListener("click", function attackListener(e) {
       const square = e.target.closest(".target .square");

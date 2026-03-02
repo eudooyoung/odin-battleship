@@ -17,9 +17,9 @@ export const renderMain = () => {
   const targetDesc = renderDesc("target");
   const ocean = renderBoard("ocean");
   const target = renderBoard("target");
-  const console = renderConsole();
+  const consoleDOM = renderConsole();
 
-  boardContainer.append(oceanDesc, targetDesc, ocean, target, console);
+  boardContainer.append(oceanDesc, targetDesc, ocean, target, consoleDOM);
   main.append(boardContainer);
 };
 
@@ -123,25 +123,31 @@ const getTargetSquareFromCoord = (coord) => {
 };
 
 const renderConsole = () => {
-  const console = document.createElement("div");
-  console.classList.add("console");
+  const consoleDOM = document.createElement("div");
+  consoleDOM.classList.add("console");
 
   const startButton = document.createElement("button");
   startButton.textContent = "Start Game";
   startButton.classList.add("button", "start");
 
-  console.append(startButton);
+  consoleDOM.append(startButton);
 
-  return console;
+  return consoleDOM;
 };
 
 export const updateConsole = (messageObject) => {
-  const console = main.querySelector(".console");
+  const consoleDOM = main.querySelector(".console");
 
   if (!messageObject) {
-    const button = console.querySelector(".button.start");
-    console.removeChild(button);
+    const button = consoleDOM.querySelector(".button.start");
+    consoleDOM.removeChild(button);
     return;
+  }
+
+  if (messageObject.shippingMessage) {
+    const shippingMessage = document.createElement("div");
+    shippingMessage.textContent = messageObject.shippingMessage;
+    consoleDOM.replaceChildren(shippingMessage);
   }
 
   if (messageObject.playerMessage || messageObject.computermessage) {
@@ -149,7 +155,7 @@ export const updateConsole = (messageObject) => {
     const computerMessage = document.createElement("div");
     playerMessage.textContent = `Player Call: ${messageObject.playerMessage}`;
     computerMessage.textContent = `Computer Call: ${messageObject.computerMessage}`;
-    console.replaceChildren(playerMessage, computerMessage);
+    consoleDOM.replaceChildren(playerMessage, computerMessage);
     return;
   }
 
@@ -157,7 +163,7 @@ export const updateConsole = (messageObject) => {
     const errorMessage = document.createElement("div");
     errorMessage.classList.add("error");
     errorMessage.textContent = messageObject.errorMessage;
-    console.replaceChildren(errorMessage);
+    consoleDOM.replaceChildren(errorMessage);
     return;
   }
 
@@ -167,7 +173,7 @@ export const updateConsole = (messageObject) => {
     const restartButton = document.createElement("button");
     restartButton.textContent = "Restart";
     restartButton.classList.add("button", "restart");
-    console.replaceChildren(resultMessage, restartButton);
+    consoleDOM.replaceChildren(resultMessage, restartButton);
     return;
   }
 };
