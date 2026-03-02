@@ -39,11 +39,11 @@ describe("gameboard test", () => {
 
   it("recieveAttack function", () => {
     board.placeShip([0, 0], 0);
-    expect(board.recieveAttack([0, 0])).toBe(0);
-    expect(board.recieveAttack([1, 0])).toBe(0);
-    expect(board.recieveAttack([2, 0])).toBe(0);
-    expect(board.recieveAttack([3, 0])).toBe(0);
-    expect(board.recieveAttack([4, 0])).toBe(0);
+    expect(board.recieveAttack([0, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([1, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([2, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([3, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([4, 0])).toBe("CARRIER");
 
     expect(board.recieveAttack([0, 3])).toBeNull();
 

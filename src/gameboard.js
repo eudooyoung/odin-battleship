@@ -84,7 +84,7 @@ export default class Gameboard {
         if (ship.isSunk) {
           this.#sunk.add(ship.typeCode);
         }
-        return ship.typeCode;
+        return ship.type;
       }
     }
 
