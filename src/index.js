@@ -35,14 +35,7 @@ const play = async () => {
   await placeShipFromDOM(playerBoard);
 
   const computerBoard = computer.board;
-  computerBoard.placeShip([0, 0], 0);
-  computerBoard.placeShip([0, 1], 1);
-  computerBoard.placeShip([0, 2], 2);
-  computerBoard.placeShip([0, 3], 3);
-  computerBoard.placeShip([0, 4], 4);
-
-  updateOcean(playerBoard);
-  updateTarget(computerBoard);
+  computerPlayerPlaceShip(computerBoard);
 
   while (playerBoard.sunk.size < 5 && computerBoard.sunk.size < 5) {
     try {
@@ -67,7 +60,7 @@ const play = async () => {
   }
 };
 
-const placeShipFromDOM = async (playerBoard) => {
+const placeShipFromDOM = async (board) => {
   let shippingMessage;
   for (let i = 0; i < 5; i++) {
     shippingMessage = `Choose square to ship ${Ship.TYPES[i].name}...`;
@@ -109,9 +102,9 @@ const placeShipFromDOM = async (playerBoard) => {
         const square = await getShippingSquareFromListener();
         const row = square.dataset.rows - 1;
         const col = square.dataset.columns - 1;
-        playerBoard.placeShip([row, col], i, isVertical);
+        board.placeShip([row, col], i, isVertical);
         deHighlightShipCandidate();
-        updateOcean(playerBoard);
+        updateOcean(board);
         break;
       } catch (e) {
         updateConsole({ errorMessage: e.message });
@@ -128,6 +121,22 @@ const placeShipFromDOM = async (playerBoard) => {
 
   shippingMessage = "Shipping has been completed. Game Start!";
   updateConsole({ shippingMessage });
+};
+
+const computerPlayerPlaceShip = (board) => {
+  for (let i = 0; i < 5; i++) {
+    while (true) {
+      try {
+        const row = Math.floor(Math.random() * 10);
+        const col = Math.floor(Math.random() * 10);
+        const isVertical = Math.floor(Math.random() * 2) === 0 ? true : false;
+        const coord = [row, col];
+        board.placeShip(coord, i, isVertical);
+        break;
+      } catch {}
+    }
+  }
+  updateTarget(board);
 };
 
 const getShippingSquareFromListener = () => {
