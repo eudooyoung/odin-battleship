@@ -73,28 +73,44 @@ const placeShipFromDOM = async (playerBoard) => {
     shippingMessage = `Choose square to ship ${Ship.TYPES[i].name}...`;
     updateConsole({ shippingMessage });
 
+    const shipLength = Ship.TYPES[i].length;
+    let isVertical = true;
+    let startSquare;
     const oceanSquares = getOceanSquare();
-    oceanSquares.forEach((oceanSquare) => {
-      oceanSquare.addEventListener("mouseover", function highlightListener(e) {
-        if (e.shiftKey) {
-          highlightShipCandidate(e.target, Ship.TYPES[i].length, false);
-        } else {
-          highlightShipCandidate(e.target, Ship.TYPES[i].length);
-        }
-      });
+    const highlightListener = (e) => {
+      startSquare = e.target;
+      highlightShipCandidate(startSquare, shipLength, isVertical);
+    };
 
-      oceanSquare.addEventListener("mouseout", function deHighlightListener(e) {
-        deHighlightShipCandidate(e.target, Ship.TYPES[i].length, false);
-        deHighlightShipCandidate(e.target, Ship.TYPES[i].length);
-      });
+    const deHighlightListener = () => {
+      deHighlightShipCandidate();
+    };
+
+    const shiftKeyListener = (e) => {
+      if (e.shiftKey) {
+        isVertical = !isVertical;
+        deHighlightShipCandidate();
+        if (!startSquare) {
+          return;
+        }
+        startSquare.dispatchEvent(new MouseEvent("mouseover"));
+      }
+    };
+
+    oceanSquares.forEach((oceanSquare) => {
+      oceanSquare.addEventListener("mouseover", highlightListener);
+      oceanSquare.addEventListener("mouseout", deHighlightListener);
     });
+
+    window.addEventListener("keydown", shiftKeyListener);
 
     while (true) {
       try {
         const square = await getShippingSquareFromListener();
         const row = square.dataset.rows - 1;
         const col = square.dataset.columns - 1;
-        playerBoard.placeShip([row, col], i);
+        playerBoard.placeShip([row, col], i, isVertical);
+        deHighlightShipCandidate();
         updateOcean(playerBoard);
         break;
       } catch (e) {
@@ -102,21 +118,12 @@ const placeShipFromDOM = async (playerBoard) => {
       }
     }
 
-    // oceanSquares.forEach((oceanSquare) => {
-    //   oceanSquare.removeEventListener(
-    //     "mouseover",
-    //     function highlightListener(e) {
-    //       highlightShipCandidate(e.target, Ship.TYPES[i].length);
-    //     },
-    //   );
+    oceanSquares.forEach((oceanSquare) => {
+      oceanSquare.removeEventListener("mouseover", highlightListener);
+      oceanSquare.removeEventListener("mouseout", deHighlightListener);
+    });
 
-    //   oceanSquare.removeEventListener(
-    //     "mouseout",
-    //     function deHighlightListener(e) {
-    //       deHighlightShipCandidate(e.target, Ship.TYPES[i].length);
-    //     },
-    //   );
-    // });
+    window.removeEventListener("keydown", shiftKeyListener);
   }
 
   shippingMessage = "Shipping has been completed. Game Start!";
@@ -130,11 +137,7 @@ const getShippingSquareFromListener = () => {
       if (!square) {
         reject(new Error());
       }
-      if (e.shiftKey) {
-        resolve({ square: square, isVertical: false });
-      } else {
-        resolve({ square: square, isVertical: true });
-      }
+      resolve(square);
       main.removeEventListener("click", shippingListener);
     });
   });
