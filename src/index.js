@@ -8,12 +8,14 @@ import {
   renderFooter,
   updateOcean,
   updateTarget,
-  mark,
   updateConsole,
+  clearMain,
+  highlightShipCandidate,
+  getOceanSquare,
+  deHighlightShipCandidate,
 } from "./dom.js";
 import Player from "./player.js";
-
-const turn = { current: null };
+import Ship from "./ship.js";
 
 const init = () => {
   const body = document.body;
@@ -30,11 +32,7 @@ const play = async () => {
   const computer = new Player();
 
   const playerBoard = player.board;
-  playerBoard.placeShip([0, 0], 0);
-  playerBoard.placeShip([0, 1], 1);
-  playerBoard.placeShip([0, 2], 2);
-  playerBoard.placeShip([0, 3], 3);
-  playerBoard.placeShip([0, 4], 4);
+  await placeShipFromDOM(playerBoard);
 
   const computerBoard = computer.board;
   computerBoard.placeShip([0, 0], 0);
@@ -43,53 +41,170 @@ const play = async () => {
   computerBoard.placeShip([0, 3], 3);
   computerBoard.placeShip([0, 4], 4);
 
-  turn.current = player;
-
   updateOcean(playerBoard);
   updateTarget(computerBoard);
-  updateConsole(turn);
 
-  while (playerBoard.ships.size > 0 && computerBoard.ships.size > 0) {
-    const square = await getSquareFromListener();
-    playerAttack(computerBoard, square);
-    computerAttack(playerBoard);
+  while (playerBoard.sunk.size < 5 && computerBoard.sunk.size < 5) {
+    try {
+      const square = await getAttackSquareFromListener();
+      const playerMessage = await playerAttack(computerBoard, square);
+      const computerMessage = computerAttack(playerBoard);
 
-    updateOcean(playerBoard);
-    updateTarget(computerBoard);
-    updateConsole(turn);
+      updateOcean(playerBoard);
+      updateTarget(computerBoard);
+      updateConsole({ playerMessage, computerMessage });
+    } catch (e) {
+      updateConsole({ errorMessage: e.message });
+    }
+  }
+
+  if (playerBoard.sunk.size === 5) {
+    updateConsole({ resultMessage: "Computer Win!" });
+  }
+
+  if (computerBoard.sunk.size === 5) {
+    updateConsole({ resultMessage: "Player Win!" });
   }
 };
 
-const getSquareFromListener = () => {
-  return new Promise((resolve) => {
+const placeShipFromDOM = async (playerBoard) => {
+  let shippingMessage;
+  for (let i = 0; i < 5; i++) {
+    shippingMessage = `Choose square to ship ${Ship.TYPES[i].name}...`;
+    updateConsole({ shippingMessage });
+
+    const shipLength = Ship.TYPES[i].length;
+    let isVertical = true;
+    let startSquare;
+    const oceanSquares = getOceanSquare();
+    const highlightListener = (e) => {
+      startSquare = e.target;
+      highlightShipCandidate(startSquare, shipLength, isVertical);
+    };
+
+    const deHighlightListener = () => {
+      deHighlightShipCandidate();
+    };
+
+    const shiftKeyListener = (e) => {
+      if (e.shiftKey) {
+        isVertical = !isVertical;
+        deHighlightShipCandidate();
+        if (!startSquare) {
+          return;
+        }
+        startSquare.dispatchEvent(new MouseEvent("mouseover"));
+      }
+    };
+
+    oceanSquares.forEach((oceanSquare) => {
+      oceanSquare.addEventListener("mouseover", highlightListener);
+      oceanSquare.addEventListener("mouseout", deHighlightListener);
+    });
+
+    window.addEventListener("keydown", shiftKeyListener);
+
+    while (true) {
+      try {
+        const square = await getShippingSquareFromListener();
+        const row = square.dataset.rows - 1;
+        const col = square.dataset.columns - 1;
+        playerBoard.placeShip([row, col], i, isVertical);
+        deHighlightShipCandidate();
+        updateOcean(playerBoard);
+        break;
+      } catch (e) {
+        updateConsole({ errorMessage: e.message });
+      }
+    }
+
+    oceanSquares.forEach((oceanSquare) => {
+      oceanSquare.removeEventListener("mouseover", highlightListener);
+      oceanSquare.removeEventListener("mouseout", deHighlightListener);
+    });
+
+    window.removeEventListener("keydown", shiftKeyListener);
+  }
+
+  shippingMessage = "Shipping has been completed. Game Start!";
+  updateConsole({ shippingMessage });
+};
+
+const getShippingSquareFromListener = () => {
+  return new Promise((resolve, reject) => {
+    main.addEventListener("click", function shippingListener(e) {
+      const square = e.target.closest(".ocean .square");
+      if (!square) {
+        reject(new Error());
+      }
+      resolve(square);
+      main.removeEventListener("click", shippingListener);
+    });
+  });
+};
+
+const getAttackSquareFromListener = () => {
+  return new Promise((resolve, reject) => {
     main.addEventListener("click", function attackListener(e) {
       const square = e.target.closest(".target .square");
+      if (!square) {
+        reject(new Error());
+      }
       resolve(square);
       main.removeEventListener("click", attackListener);
     });
   });
 };
 
-const playerAttack = (board, square) => {
+const playerAttack = async (board, square) => {
   const row = square.dataset.rows - 1;
   const col = square.dataset.columns - 1;
-  board.recieveAttack([row, col]);
+  const attackResult = board.recieveAttack([row, col]);
+  return generateAttackResult(attackResult, row, col);
 };
 
 const computerAttack = (board) => {
-  const row = Math.floor(Math.random() * 10);
-  const col = Math.floor(Math.random() * 10);
-  const coord = [row, col];
-  const coordStr = JSON.stringify(coord);
-  if (board.missed.has(coordStr)) {
-    board.ocean.keys();
+  let row = Math.floor(Math.random() * 10);
+  let col = Math.floor(Math.random() * 10);
+  let coord = [row, col];
+  let coordStr = JSON.stringify(coord);
+  while (board.missed.has(coordStr) || board.hitSet.has(coordStr)) {
+    row = Math.floor(Math.random() * 10);
+    col = Math.floor(Math.random() * 10);
+    coord = [row, col];
+    coordStr = JSON.stringify(coord);
   }
-  board.recieveAttack([row, col]);
+
+  const attackResult = board.recieveAttack([row, col]);
+  return generateAttackResult(attackResult, row, col);
+};
+
+const generateAttackResult = (attackResult, row, col) => {
+  const rowAsDisplay = String.fromCharCode(row + 65);
+  const colAsDisplay = col + 1;
+  let resultMessage = `${rowAsDisplay}-${colAsDisplay}... `;
+  if (attackResult === null) {
+    resultMessage += "Missed.";
+    return resultMessage;
+  }
+  resultMessage += `Hit! ${attackResult}.`;
+  return resultMessage;
+};
+
+const refreshBoard = () => {
+  clearMain();
+  renderMain();
 };
 
 main.addEventListener("click", (e) => {
-  const startButton = e.target.closest("button", "start");
+  const startButton = e.target.closest(".button.start");
   if (startButton) {
+    play();
+  }
+
+  const restartButton = e.target.closest(".button.restart");
+  if (restartButton) {
+    refreshBoard();
     play();
   }
 });

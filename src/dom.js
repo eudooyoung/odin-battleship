@@ -17,9 +17,9 @@ export const renderMain = () => {
   const targetDesc = renderDesc("target");
   const ocean = renderBoard("ocean");
   const target = renderBoard("target");
-  const console = renderConsole();
+  const consoleDOM = renderConsole();
 
-  boardContainer.append(oceanDesc, targetDesc, ocean, target, console);
+  boardContainer.append(oceanDesc, targetDesc, ocean, target, consoleDOM);
   main.append(boardContainer);
 };
 
@@ -54,112 +54,172 @@ const renderIndices = (board) => {
   const colIndices = board.querySelectorAll(`[data-rows="0"]`);
   for (let i = 1; i < colIndices.length; i++) {
     const colIndice = colIndices[i];
-    colIndice.textContent = String.fromCharCode(64 + i);
+    colIndice.textContent = i;
   }
 
   const rowIndices = board.querySelectorAll(`[data-columns="0"]`);
   for (let i = 1; i < rowIndices.length; i++) {
     const rowIndice = rowIndices[i];
-    rowIndice.textContent = i;
+    rowIndice.textContent = String.fromCharCode(64 + i);
   }
 };
 
-export const updateOcean = (board) => {
-  const oceanDOM = main.querySelector(".board.ocean");
-  const ocean = board.ocean;
-  const shipStatuses = ocean.values();
-  for (let shipStatus of shipStatuses) {
-    for (let coord of shipStatus.keys()) {
-      const coordArr = JSON.parse(coord);
-      const row = coordArr[0];
-      const col = coordArr[1];
-      const square = oceanDOM.querySelector(
-        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
-      );
-      square.classList.add("shipped");
-      if (!shipStatus.get(coord)) {
-        square.textContent = "X";
-        square.classList.add("attacked");
+export const getOceanSquare = () => {
+  return main.querySelectorAll(".ocean .square");
+};
+
+export const highlightShipCandidate = (
+  startSquare,
+  length,
+  isVertical = true,
+) => {
+  const row = Number(startSquare.dataset.rows);
+  const col = Number(startSquare.dataset.columns);
+  if (row !== 0 && col !== 0) {
+    if (isVertical) {
+      if (row + length - 1 > 10) return;
+    } else {
+      if (col + length - 1 > 10) return;
+    }
+    for (let i = 0; i < length; i++) {
+      if (isVertical) {
+        const square = main.querySelector(
+          `.ocean [data-rows="${row + i}"][data-columns="${col}"]`,
+        );
+        square.classList.add("ship-candidate");
+      } else {
+        const square = main.querySelector(
+          `.ocean [data-rows="${row}"][data-columns="${col + i}"]`,
+        );
+        square.classList.toggle("ship-candidate");
       }
     }
+  }
+};
+
+export const deHighlightShipCandidate = () => {
+  const marked = main.querySelectorAll(".ship-candidate");
+  marked.forEach((square) => {
+    square.classList.toggle("ship-candidate");
+  });
+};
+
+export const updateOcean = (board) => {
+  const occupied = board.occupied;
+  for (let coord of occupied) {
+    const square = getOceanSquareFromCoord(coord);
+    square.classList.add("occupied");
+  }
+
+  const hitSet = board.hitSet;
+  for (let hitCoord of hitSet) {
+    const hitSquare = getOceanSquareFromCoord(hitCoord);
+    hitSquare.classList.add("hit");
+    hitSquare.textContent = "†";
   }
 
   const missed = board.missed;
   for (let missedCoord of missed) {
-    const missedArr = JSON.parse(missedCoord);
-    const row = missedArr[0] + 1;
-    const col = missedArr[1] + 1;
-    const square = oceanDOM.querySelector(
-      `[data-rows="${row}"][data-columns="${col}"]`,
-    );
-    square.classList.add("missed");
-    square.textContent = ".";
+    const missedSquare = getOceanSquareFromCoord(missedCoord);
+    missedSquare.classList.add("missed");
+    missedSquare.textContent = "ㆍ";
   }
 };
 
 export const updateTarget = (board) => {
-  const targetDOM = main.querySelector(".board.target");
-  const target = board.ocean;
-  const shipStatuses = target.values();
-  for (let shipStatus of shipStatuses) {
-    for (let coord of shipStatus.keys()) {
-      const coordArr = JSON.parse(coord);
-      const row = coordArr[0];
-      const col = coordArr[1];
-      const square = targetDOM.querySelector(
-        `[data-rows="${row + 1}"][data-columns="${col + 1}"]`,
-      );
-      if (!shipStatus.get(coord)) {
-        square.classList.add("attacked");
-      }
-    }
+  const hitSet = board.hitSet;
+  for (let hitCoord of hitSet) {
+    const hitSquare = getTargetSquareFromCoord(hitCoord);
+    hitSquare.classList.add("hit");
+    hitSquare.textContent = "†";
   }
 
   const missed = board.missed;
   for (let missedCoord of missed) {
-    const missedArr = JSON.parse(missedCoord);
-    const row = missedArr[0] + 1;
-    const col = missedArr[1] + 1;
-    const square = targetDOM.querySelector(
-      `[data-rows="${row}"][data-columns="${col}"]`,
-    );
-    square.classList.add("missed");
-    square.textContent = ".";
+    const missedSquare = getTargetSquareFromCoord(missedCoord);
+    missedSquare.classList.add("missed");
+    missedSquare.textContent = ".";
   }
 };
 
-export const mark = (isValidAttack, square) => {
-  if (isValidAttack) {
-    square.classList.add("show");
-    return;
-  }
+const getOceanSquareFromCoord = (coord) => {
+  const coordArr = JSON.parse(coord);
+  const row = coordArr[0] + 1;
+  const col = coordArr[1] + 1;
+  const square = main.querySelector(
+    `.ocean [data-rows="${row}"][data-columns="${col}"]`,
+  );
+  return square;
+};
 
-  if (!isValidAttack) {
-    square.textContent = ".";
-  }
+const getTargetSquareFromCoord = (coord) => {
+  const coordArr = JSON.parse(coord);
+  const row = coordArr[0] + 1;
+  const col = coordArr[1] + 1;
+  const square = main.querySelector(
+    `.target [data-rows="${row}"][data-columns="${col}"]`,
+  );
+  return square;
 };
 
 const renderConsole = () => {
-  const console = document.createElement("div");
-  console.classList.add("console");
+  const consoleDOM = document.createElement("div");
+  consoleDOM.classList.add("console");
 
   const startButton = document.createElement("button");
   startButton.textContent = "Start Game";
   startButton.classList.add("button", "start");
 
-  console.append(startButton);
+  consoleDOM.append(startButton);
 
-  return console;
+  return consoleDOM;
 };
 
-export const updateConsole = (turn) => {
-  const console = main.querySelector(".console");
+export const updateConsole = (messageObject) => {
+  const consoleDOM = main.querySelector(".console");
 
-  if (turn.current.isReal) {
-    const message = document.createElement("div");
-    message.textContent = "Wating for attack...";
-    console.replaceChildren(message);
+  if (!messageObject) {
+    const button = consoleDOM.querySelector(".button.start");
+    consoleDOM.removeChild(button);
+    return;
   }
+
+  if (messageObject.shippingMessage) {
+    const shippingMessage = document.createElement("div");
+    shippingMessage.textContent = messageObject.shippingMessage;
+    consoleDOM.replaceChildren(shippingMessage);
+  }
+
+  if (messageObject.playerMessage || messageObject.computermessage) {
+    const playerMessage = document.createElement("div");
+    const computerMessage = document.createElement("div");
+    playerMessage.textContent = `Player Call: ${messageObject.playerMessage}`;
+    computerMessage.textContent = `Computer Call: ${messageObject.computerMessage}`;
+    consoleDOM.replaceChildren(playerMessage, computerMessage);
+    return;
+  }
+
+  if (messageObject.errorMessage) {
+    const errorMessage = document.createElement("div");
+    errorMessage.classList.add("error");
+    errorMessage.textContent = messageObject.errorMessage;
+    consoleDOM.replaceChildren(errorMessage);
+    return;
+  }
+
+  if (messageObject.resultMessage) {
+    const resultMessage = document.createElement("div");
+    resultMessage.textContent = messageObject.resultMessage;
+    const restartButton = document.createElement("button");
+    restartButton.textContent = "Restart";
+    restartButton.classList.add("button", "restart");
+    consoleDOM.replaceChildren(resultMessage, restartButton);
+    return;
+  }
+};
+
+export const clearMain = () => {
+  main.innerHTML = "";
 };
 
 export const renderFooter = () => {

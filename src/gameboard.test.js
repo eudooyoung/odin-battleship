@@ -30,25 +30,36 @@ describe("gameboard test", () => {
     for (let i = 0; i < ship2.length; i++) {
       expect(coords2[i]).toBe(`[0,${1 + i}]`);
     }
+  });
+
+  it("placeShip errors", () => {
+    board.placeShip([3, 3], 0);
 
     // cannot place duplicate type of ship
     expect(() => board.placeShip([0, 5], 0)).toThrow(Error);
     // cannot place a ship overlaping another
-    expect(() => board.placeShip([0, 0], 2)).toThrow(Error);
+    expect(() => board.placeShip([1, 3], 1)).toThrow(
+      Error("The coordinate has already been occupied"),
+    );
+    expect(board.ships.has(1)).toBe(false);
+    // cannot place a ship out of board
+    expect(() => board.placeShip([9, 9], 1)).toThrow(Error);
+    expect(board.ships.has(1)).toBe(false);
   });
 
   it("recieveAttack function", () => {
     board.placeShip([0, 0], 0);
-    expect(board.recieveAttack([0, 0])).toBe(true);
-    expect(board.recieveAttack([1, 0])).toBe(true);
-    expect(board.recieveAttack([2, 0])).toBe(true);
-    expect(board.recieveAttack([3, 0])).toBe(true);
-    expect(board.recieveAttack([4, 0])).toBe(true);
+    expect(board.recieveAttack([0, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([1, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([2, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([3, 0])).toBe("CARRIER");
+    expect(board.recieveAttack([4, 0])).toBe("CARRIER");
 
-    expect(board.recieveAttack([0, 3])).toBe(false);
+    expect(board.recieveAttack([0, 3])).toBeNull();
 
     expect(() => board.recieveAttack([-1, -3])).toThrow(RangeError);
     expect(() => board.recieveAttack([11, 10])).toThrow(RangeError);
+    expect(() => board.recieveAttack([0, 0])).toThrow(Error);
   });
 
   it("missed attacks tracking", () => {

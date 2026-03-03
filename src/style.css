@@ -81,24 +81,47 @@ main {
   align-items: center;
 }
 
-.ocean .shipped {
+.ship-candidate {
+  outline: 1px solid #0f0;
+}
+
+.ocean .occupied {
+  background-color: lightpink;
+}
+
+.ocean .hit {
   background-color: #f00;
 }
 
-.ocean .shipped.attacked {
-  color: #fff;
+.target .hit {
+  background-color: #00f;
 }
 
-.target .attacked {
-  background-color: #00f;
+.square.hit {
+  color: #fff;
+  font-size: 1.8rem;
+}
+
+.square.missed {
+  background-color: #ccc;
 }
 
 .console {
   grid-area: button-container;
-
   background-color: lightgreen;
+
   display: grid;
   place-content: center;
+  grid-template-rows: 25px;
+  grid-template-columns: 30%;
+}
+
+.console .error {
+  color: #f00;
+}
+
+button {
+  /* max-width: 50px; */
 }
 
 footer {
