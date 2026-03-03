@@ -130,7 +130,11 @@ const getShippingSquareFromListener = () => {
       if (!square) {
         reject(new Error());
       }
-      resolve(square);
+      if (e.shiftKey) {
+        resolve({ square: square, isVertical: false });
+      } else {
+        resolve({ square: square, isVertical: true });
+      }
       main.removeEventListener("click", shippingListener);
     });
   });
