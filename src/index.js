@@ -10,7 +10,9 @@ import {
   updateTarget,
   updateConsole,
   clearMain,
-  markShipCandidate,
+  highlightShipCandidate,
+  getOceanSquare,
+  deHighlightShipCandidate,
 } from "./dom.js";
 import Player from "./player.js";
 import Ship from "./ship.js";
@@ -68,17 +70,27 @@ const play = async () => {
 const placeShipFromDOM = async (playerBoard) => {
   let shippingMessage;
   for (let i = 0; i < 5; i++) {
-    shippingMessage = `Choose square to ship ${Ship.TYPES[i]}...`;
-    main.addEventListener("mouseover", (e) => {
-      const square = e.target.closest(".ocean .square");
-      if (square) {
-        markShipCandidate(square, i);
-      }
+    shippingMessage = `Choose square to ship ${Ship.TYPES[i].name}...`;
+    updateConsole({ shippingMessage });
+
+    const oceanSquares = getOceanSquare();
+    oceanSquares.forEach((oceanSquare) => {
+      oceanSquare.addEventListener("mouseover", function highlightListener(e) {
+        if (e.shiftKey) {
+          highlightShipCandidate(e.target, Ship.TYPES[i].length, false);
+        } else {
+          highlightShipCandidate(e.target, Ship.TYPES[i].length);
+        }
+      });
+
+      oceanSquare.addEventListener("mouseout", function deHighlightListener(e) {
+        deHighlightShipCandidate(e.target, Ship.TYPES[i].length, false);
+        deHighlightShipCandidate(e.target, Ship.TYPES[i].length);
+      });
     });
 
     while (true) {
       try {
-        updateConsole({ shippingMessage });
         const square = await getShippingSquareFromListener();
         const row = square.dataset.rows - 1;
         const col = square.dataset.columns - 1;
@@ -86,11 +98,27 @@ const placeShipFromDOM = async (playerBoard) => {
         updateOcean(playerBoard);
         break;
       } catch (e) {
-        console.error(e);
         updateConsole({ errorMessage: e.message });
       }
     }
+
+    // oceanSquares.forEach((oceanSquare) => {
+    //   oceanSquare.removeEventListener(
+    //     "mouseover",
+    //     function highlightListener(e) {
+    //       highlightShipCandidate(e.target, Ship.TYPES[i].length);
+    //     },
+    //   );
+
+    //   oceanSquare.removeEventListener(
+    //     "mouseout",
+    //     function deHighlightListener(e) {
+    //       deHighlightShipCandidate(e.target, Ship.TYPES[i].length);
+    //     },
+    //   );
+    // });
   }
+
   shippingMessage = "Shipping has been completed. Game Start!";
   updateConsole({ shippingMessage });
 };

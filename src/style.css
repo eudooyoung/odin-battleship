@@ -81,6 +81,10 @@ main {
   align-items: center;
 }
 
+.ship-candidate {
+  outline: 1px solid #0f0;
+}
+
 .ocean .occupied {
   background-color: lightpink;
 }

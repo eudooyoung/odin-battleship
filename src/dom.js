@@ -64,11 +64,65 @@ const renderIndices = (board) => {
   }
 };
 
-export const markShipCandidate = (startSquare) => {
-  const row = startSquare.dataset.rows;
-  const col = startSquare.dataset.columns;
-  if (row !== "0" && col !== "0") {
-    console.log(`${row}, ${col}`);
+export const getOceanSquare = () => {
+  return main.querySelectorAll(".ocean .square");
+};
+
+export const highlightShipCandidate = (
+  startSquare,
+  length,
+  isVertical = true,
+) => {
+  const row = Number(startSquare.dataset.rows);
+  const col = Number(startSquare.dataset.columns);
+  if (row !== 0 && col !== 0) {
+    if (isVertical) {
+      if (row + length - 1 > 10) return;
+    } else {
+      if (col + length - 1 > 10) return;
+    }
+    for (let i = 0; i < length; i++) {
+      if (isVertical) {
+        const square = main.querySelector(
+          `.ocean [data-rows="${row + i}"][data-columns="${col}"]`,
+        );
+        square.classList.add("ship-candidate");
+      } else {
+        const square = main.querySelector(
+          `.ocean [data-rows="${row}"][data-columns="${col + i}"]`,
+        );
+        square.classList.add("ship-candidate");
+      }
+    }
+  }
+};
+
+export const deHighlightShipCandidate = (
+  startSquare,
+  length,
+  isVertical = true,
+) => {
+  const row = Number(startSquare.dataset.rows);
+  const col = Number(startSquare.dataset.columns);
+  if (row !== 0 && col !== 0) {
+    if (isVertical) {
+      if (row + length - 1 > 10) return;
+    } else {
+      if (col + length - 1 > 10) return;
+    }
+    for (let i = 0; i < length; i++) {
+      if (isVertical) {
+        const square = main.querySelector(
+          `.ocean [data-rows="${row + i}"][data-columns="${col}"]`,
+        );
+        square.classList.remove("ship-candidate");
+      } else {
+        const square = main.querySelector(
+          `.ocean [data-rows="${row}"][data-columns="${col + i}"]`,
+        );
+        square.classList.remove("ship-candidate");
+      }
+    }
   }
 };
 
