@@ -72,6 +72,11 @@ main {
   grid-area: target;
 }
 
+.square.index {
+  background-color: gray;
+  color: #fff;
+}
+
 .square {
   background-color: #fff;
   aspect-ratio: 1 / 1;
@@ -82,7 +87,7 @@ main {
 }
 
 .ship-candidate {
-  outline: 1px solid #0f0;
+  outline: 1px solid greenyellow;
 }
 
 .rotation-guide {

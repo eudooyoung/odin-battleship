@@ -53,15 +53,20 @@ const renderBoard = (name) => {
 const renderIndices = (board) => {
   const colIndices = board.querySelectorAll(`[data-rows="0"]`);
   for (let i = 1; i < colIndices.length; i++) {
-    const colIndice = colIndices[i];
-    colIndice.textContent = i;
+    const colIndex = colIndices[i];
+    colIndex.classList.add("index");
+    colIndex.textContent = i;
   }
 
   const rowIndices = board.querySelectorAll(`[data-columns="0"]`);
   for (let i = 1; i < rowIndices.length; i++) {
-    const rowIndice = rowIndices[i];
-    rowIndice.textContent = String.fromCharCode(64 + i);
+    const rowIndex = rowIndices[i];
+    rowIndex.classList.add("index");
+    rowIndex.textContent = String.fromCharCode(64 + i);
   }
+
+  const cornerIndex = board.querySelector(`[data-rows="0"][data-columns="0"]`);
+  cornerIndex.classList.add("index");
 };
 
 export const getOceanSquare = () => {
