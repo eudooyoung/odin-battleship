@@ -85,6 +85,10 @@ main {
   outline: 1px solid #0f0;
 }
 
+.rotation-guide {
+  color: blueviolet;
+}
+
 .ocean .occupied {
   background-color: lightpink;
 }
