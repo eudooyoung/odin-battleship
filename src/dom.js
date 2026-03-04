@@ -188,6 +188,12 @@ export const updateConsole = (messageObject) => {
     const shippingMessage = document.createElement("div");
     shippingMessage.textContent = messageObject.shippingMessage;
     consoleDOM.replaceChildren(shippingMessage);
+    if (messageObject.rotationGuide) {
+      const rotationGuide = document.createElement("div");
+      rotationGuide.classList.add("rotation-guide");
+      rotationGuide.textContent = messageObject.rotationGuide;
+      consoleDOM.append(rotationGuide);
+    }
   }
 
   if (messageObject.playerMessage || messageObject.computermessage) {

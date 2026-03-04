@@ -62,12 +62,14 @@ const play = async () => {
 
 const placeShipFromDOM = async (board) => {
   let shippingMessage;
+  let isVertical = true;
   for (let i = 0; i < 5; i++) {
     shippingMessage = `Choose square to ship ${Ship.TYPES[i].name}...`;
-    updateConsole({ shippingMessage });
+    let rotationGuide = "Press shift key to rotate ship";
+
+    updateConsole({ shippingMessage, rotationGuide });
 
     const shipLength = Ship.TYPES[i].length;
-    let isVertical = true;
     let startSquare;
     const oceanSquares = getOceanSquare();
     const highlightListener = (e) => {
