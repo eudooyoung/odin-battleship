@@ -234,5 +234,18 @@ export const clearMain = () => {
 };
 
 export const renderFooter = () => {
-  footer.textContent = "This is footer";
+  footer.append(
+    document.createTextNode("© 2026 Odin Project"),
+    document.createTextNode(" · "),
+    renderLink("GitHub", "https://github.com/eudooyoung/odin-battleship.git"),
+  );
 };
+
+function renderLink(text, linkAddress) {
+  const link = document.createElement("a");
+  link.textContent = text;
+  link.href = linkAddress;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  return link;
+}

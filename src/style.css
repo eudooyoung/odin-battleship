@@ -129,11 +129,13 @@ main {
   color: #f00;
 }
 
-button {
-  /* max-width: 50px; */
-}
-
 footer {
   display: grid;
-  place-items: center;
+  grid-auto-flow: column;
+  place-content: center;
+  white-space: pre-wrap;
+}
+
+footer a {
+  color: inherit;
 }
